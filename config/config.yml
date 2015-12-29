@@ -1,0 +1,10 @@
+default:
+  mysql:
+    host: 'localhost'
+    port: 3306
+    user: 'meccano'
+    password: 'meccano'
+    database: 'IOTDB'
+    connectionLimit: 10
+  estatistica:
+    sigmas: 6
