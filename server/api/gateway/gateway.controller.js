@@ -61,7 +61,7 @@ function processDeviceStatistics(fact) {
 }
 
 function prepareData(fact){
-  var milis = fact.inicio + fact.delta;
+  var milis = fact.start + fact.delta;
   var dateTime = new Date(milis);
   return  {
     'year': dateTime.getFullYear(),
