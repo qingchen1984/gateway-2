@@ -19,6 +19,4 @@
 'use strict';
 var yamlConfig = require('node-yaml-config');
 
-module.exports = function() {
-  return yamlConfig.load(process.env.CONFIG_FILE, process.env.NODE_ENV);
-}
+module.exports = yamlConfig.load(process.env.CONFIG_FILE, process.env.NODE_ENV);

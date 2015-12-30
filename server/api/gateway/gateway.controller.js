@@ -21,7 +21,6 @@
 
 var config = require('../../config');
 var mysql = require('mysql');
-var moment = require('moment');
 var util = require('util');
 
 var pool = mysql.createPool(config.mysql);
@@ -38,16 +37,15 @@ exports.save = function(req, res) {
 };
 
 exports.getTime = function(req, res) {
-
-  var now = moment.tz(config.timezone || 'Brazil/East');
-  res.send(now.format('x') + '\n');
+  res.send(Date.now() + '\n');
   res.end();
 };
 
 function processDeviceStatistics(fact) {
-  pool.query('select average, deviation from DeviceStatistics where device = ? and and sensor = ?', [fact.device, fact.sensor],
+  pool.query('select average, deviation from DeviceStatistics where device = ? and sensor = ?', [fact.device, fact.sensor],
     function(err, rows, fields) {
-      if (rows.length) {
+      if(err) console.error(err);
+      if (rows && rows.length) {
         var deviation = rows[0].deviation;
         if (fact.data > (config.statistics.sigmas * deviation)) {
           console.warn('Noise ignored: group=%d device=%d sensor=%d data=%d sigmas=%d deviation=%d', fact.group,fact.device,fact.sensor,fact.data,config.statistics.sigmas,deviation);
@@ -72,7 +70,7 @@ function prepareData(fact){
     'minute': dateTime.getMinutes(),
     'second': dateTime.getSeconds(),
     'fact': fact.fact,
-    'group': fact.group,
+    'device_group': fact.group,
     'device': fact.device,
     'sensor': fact.sensor,
     'data': fact.data,

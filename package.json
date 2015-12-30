@@ -2,28 +2,23 @@
   "name": "meccano-iot-gateway",
   "version": "1.0.0",
   "description": "Meccano IoT Gateway is a multi-purpose IoT (Internet of Things) board and software plataform.",
-  "main": "meccano.js",
+  "main": "server/app.js",
   "scripts": {
-    "start": "node meccano.js",
+    "start": "node server/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "meccano",
     "iot",
-    "nodejs",
     "gateway"
   ],
   "author": "Meccano IoT",
   "license": "GPL-3.0",
   "dependencies": {
-    "aws-sdk": "^2.2.26",
     "body-parser": "^1.14.2",
     "compression": "^1.6.0",
-    "debug": "^2.2.0",
     "errorhandler": "^1.4.2",
     "express": "^4.13.3",
-    "moment": "^2.10.6",
-    "moment-timezone": "^0.3.1",
     "morgan": "^1.6.1",
     "mysql": "^2.10.0",
     "node-yaml-config": "0.0.3"
@@ -37,5 +32,13 @@
     "mocha": "^2.3.3",
     "should": "^7.1.0",
     "supertest": "^1.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meccano-iot/gateway"
+  },
+  "bugs": {
+    "url": "https://github.com/meccano-iot/gateway/issues"
+  },
+  "homepage": "https://github.com/meccano-iot/gateway"
 }
