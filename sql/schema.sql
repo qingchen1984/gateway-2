@@ -4,6 +4,8 @@ CREATE SCHEMA IOTDB ;
 use IOTDB;
 
 -- Create table facts
+DROP TABLE Facts;
+
 CREATE TABLE Facts (
     fact VARCHAR(50) NOT NULL,
     year INT NOT NULL,
@@ -17,28 +19,35 @@ CREATE TABLE Facts (
     device VARCHAR(20) NOT NULL,
     sensor INT NOT NULL,
     data INT NOT NULL,
-    creationDate DATETIME NOT NULL
+    creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create table Device Statistics
+DROP TABLE DeviceStatistics;
+
 CREATE TABLE DeviceStatistics (
     device VARCHAR(20),
     sensor INT,
     average FLOAT,
     deviation FLOAT,
     error FLOAT,
-    creationDate DATETIME
+    creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create table Announcement
+DROP TABLE Announcement;
+
 CREATE TABLE Announcement (
-  device VARCHAR(20) NOT NULL,
-  lastAnnouncementDate DATETIME
-)
+  device VARCHAR(20) NOT NULL PRIMARY KEY,
+  lastAnnouncementDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Create table Registration
+DROP TABLE Registration;
+
 CREATE TABLE Registration (
+  device VARCHAR(20) NOT NULL PRIMARY KEY,
   device_group VARCHAR(20),
-  device VARCHAR(20),
-  registrationDate DATETIME
-)
+  registrationDate DATETIME,
+  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
