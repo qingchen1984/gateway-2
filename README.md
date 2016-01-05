@@ -41,17 +41,17 @@ The schema will create the IOTDB database as well as the relational table model.
 
 Configure the config/config.yml file as follows:
 
-> default:
->  port: 80
->  mysql:
->    host: 'host_name'
->    port: 3306
->    user: 'user'
->    password: 'password'
->    database: 'IOTDB'
->    connectionLimit: 10
->  statistics:
->    sigmas: 6
+    default:
+      port: 80
+      mysql:
+        host: 'host_name'
+        port: 3306
+        user: 'user'
+        password: 'password'
+        database: 'IOTDB'
+        connectionLimit: 10
+      statistics:
+        sigmas: 6
 
 You should configure the host, port, user, password parameters.
 If you have a high concurrency, you must increase the connectionLimit accordingly.
@@ -110,10 +110,10 @@ Example:
 And in the config.yml file you may specify different environment variables:
 
 
-> default:
->  port: 8080
-> prod:
->  port: 80
+    default:
+      port: 8080
+    prod:
+      port: 80
 
 
 **CHECK_ZERO_TEST**: the gateway will discard zero data from devices/sensors.
