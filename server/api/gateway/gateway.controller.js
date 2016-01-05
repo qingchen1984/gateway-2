@@ -119,7 +119,7 @@ function prepareData(fact){
     'minute': dateTime.getMinutes(),
     'second': dateTime.getSeconds(),
     'fact': fact.fact,
-    'device_group': fact.group,
+    'device_group': fact.device_group,
     'device': fact.device,
     'sensor': fact.sensor,
     'data': fact.data,
@@ -158,7 +158,7 @@ function announce(device) {
                              }, function(error, results, fields) {
     // If announcement data does not exist, inserts to the table
     if(results[0].count == 0) {
-      console.log("Device " + device + " does not existing. Creating entry in Announcement table");
+      console.log("Device " + device + " does not exists. Creating entry in Announcement table");
       var op = pool.query('insert into `IOTDB`.`Announcement` set ?', announcement, function(errop, result) {
         if(errop) {
           console.error('(INSERT) Error announcing device ' + device);

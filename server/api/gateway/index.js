@@ -21,10 +21,20 @@
 
 var express = require('express');
 var controller = require('./gateway.controller');
+var registration = require('./registration.controller');
 
 var router = express.Router();
 
+// Routes for Root
 router.get('/', controller.getTime);
 router.post('/', controller.save);
+
+// Routes for /api/registration/
+router.get('/api/registration/', registration.get);
+router.post('/api/registration/', registration.post);
+router.delete('/api/registration/', registration.delete);
+router.put('/api/registration/', registration.put);
+
+
 
 module.exports = router;
