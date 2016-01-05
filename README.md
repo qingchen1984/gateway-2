@@ -129,7 +129,10 @@ This is the default behaviour of the gateway.
 If you want to skip this test, you should set the environment variable to **false**.
 
 
-## Device Registration
+## Device Registration API
+
+
+### Registering a new Device
 
 Due to security constraints, the access will be denied to non-registered boards/devices.
 You need to register the device in the gateway:
@@ -148,10 +151,19 @@ You should choose a device_group for your device. This attribute is used to grou
 - Everytime your device is powered on, it will use the meccano-client library to contact the gateway and do the acknowledgment process. Meccano Iot Gateway supports automatic device acknowledgement. The only thing you need to do is to include the meccano library to your sketch and configure the server/port address.
 
 
-## Device Registration information
+### Getting the Device Registration information
 
 You may check the device registration any time, calling the API:
 
 `curl -X GET -H "Content-Type: application/json" 'http://gateway_address/api/registration?device=99:99:99:99:99:99'`
+
+- 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
+
+
+### Unregistering a Device
+
+You may unregister the device calling the API:
+
+`curl -X DELETE -H "Cache-Control: no-cache" -H "Postman-Token: 16524899-0de2-d715-2cd7-498e7b5ab0e8" 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'`
 
 - 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
