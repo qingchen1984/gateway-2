@@ -16,8 +16,9 @@ The project is still in its early stages and will evolve in the future. Magazine
 
 ### Getting the source-code
 
-a) Download the source code from github
-b) Unzip the code into a any directory of your computer, for example /app/gateway
+a. Download the source code from github
+
+b. Unzip the code into a any directory of your computer, for example /app/gateway
 
 
 ### Pre-requisites
@@ -26,16 +27,18 @@ For installation, you should prepare the database first. Be sure to have a MySQL
 
 You need to create the ERD table model in the database. Connect to your MySQL instance and execute the following script:
 
+```
 /app/gateway/sql/schema.sql
+```
 
 The schema will create the IOTDB database as well as the relational table model.
 
 
-### configuration
+### Configuration
 
-c) Configure the config/config.yml file as follows:
+c. Configure the config/config.yml file as follows:
 
-`
+```
 default:
   port: 80
   mysql:
@@ -47,7 +50,7 @@ default:
     connectionLimit: 10
   statistics:
     sigmas: 6
-`
+```
 
 You should configure the host, port, user, password parameters.
 If you have a high concurrency, you must increase the connectionLimit accordingly.
