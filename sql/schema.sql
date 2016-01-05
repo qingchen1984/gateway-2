@@ -7,7 +7,7 @@ use IOTDB;
 DROP TABLE Facts;
 
 CREATE TABLE Facts (
-    fact VARCHAR(50) NOT NULL,
+    channel VARCHAR(50) NOT NULL,
     year INT NOT NULL,
     month INT NOT NULL,
     day INT NOT NULL,

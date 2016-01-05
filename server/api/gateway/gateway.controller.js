@@ -36,7 +36,7 @@ exports.save = function(req, res) {
   sensorData.forEach(function(object) {
     checkDeviceData(object);
     // Announce the device when the first line is processed
-    if(lines == 0) {
+    if(lines === 0) {
       announce(object.device);
     } else {
       lines++;
@@ -66,7 +66,7 @@ function checkDeviceData(fact) {
   // Discard data if it's zero (0)
   if(process.env.CHECK_ZERO_TEST) {
     console.log("Applying CHECK_ZERO_TEST...");
-    if(fact.data == 0) {
+    if(fact.data === 0) {
       console.warn("CHECK_ZERO_TEST failed: group=%d device=%d sensor=%d data=%d", fact.group,fact.device,fact.sensor,fact.data);
       return;
     } else {
@@ -118,7 +118,7 @@ function prepareData(fact){
     'hour': dateTime.getHours(),
     'minute': dateTime.getMinutes(),
     'second': dateTime.getSeconds(),
-    'fact': fact.fact,
+    'channel': fact.channel,
     'device_group': fact.device_group,
     'device': fact.device,
     'sensor': fact.sensor,
@@ -157,9 +157,9 @@ function announce(device) {
                                values: [device]
                              }, function(error, results, fields) {
     // If announcement data does not exist, inserts to the table
-    if(results[0].count == 0) {
+    if(results[0].count === 0) {
       console.log("Device " + device + " does not exists. Creating entry in Announcement table");
-      var op = pool.query('insert into `IOTDB`.`Announcement` set ?', announcement, function(errop, result) {
+      var opq = pool.query('insert into `IOTDB`.`Announcement` set ?', announcement, function(errop, result) {
         if(errop) {
           console.error('(INSERT) Error announcing device ' + device);
           console.error(errop);

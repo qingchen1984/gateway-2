@@ -93,7 +93,7 @@ function getRegistration(device, res) {
       });
       return;
     }
-    if (result.length == 0) {
+    if (result.length === 0) {
       // Unknown device
       res.json({
         'operation': 'GET',
@@ -104,7 +104,7 @@ function getRegistration(device, res) {
     } else {
       var r = result[0];
       // Check is device is registered
-      if(r.registrationDate != null) {
+      if(r.registrationDate !== null) {
         res.json({
           'operation' : 'GET',
           'device_group' : r.device,
@@ -151,15 +151,15 @@ function deleteRegistration(device, res) {
 
 
 /**
-* Acknowledge registration
+* Acknowledge registration 
 */
 function acknowledgeRegistration(object, res) {
   console.log("Acknowledging registration information...");
   var qu = pool.query( "select * from Registration where `device` = ?", object.device, function(errorq, results, fields) {
-    if(!errorq && results.length == 1) {
+    if(!errorq && results.length === 1) {
       console.log(results);
       var op = pool.query( { sql : 'update `Registration` set `registrationDate` = ? where `device` = ? ',
-                             values : [(new Date), object.device] },
+                             values : [(new Date()), object.device] },
                              function(error, result) {
         if (error) {
           console.error('Error updating object:', error);
