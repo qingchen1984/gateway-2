@@ -164,6 +164,6 @@ You may check the device registration any time, calling the API:
 
 You may unregister the device calling the API:
 
-`curl -X DELETE -H "Cache-Control: no-cache" -H "Postman-Token: 16524899-0de2-d715-2cd7-498e7b5ab0e8" 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'`
+`curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'`
 
 - 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
