@@ -51,3 +51,16 @@ CREATE TABLE Registration (
   registrationDate DATETIME,
   creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create the message table
+DROP TABLE Messages;
+
+CREATE TABLE Messages (
+  ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  device VARCHAR(20) NOT NULL,
+  sender VARCHAR(20) NOT NULL,
+  delivery_type VARCHAR(20) NOT NULL,
+  message VARCHAR(1024) NOT NULL,
+  readDate DATETIME,
+  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

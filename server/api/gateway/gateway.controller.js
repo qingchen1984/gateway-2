@@ -30,21 +30,31 @@ var pool = mysql.createPool(config.mysql);
 */
 exports.save = function(req, res) {
   console.log("POST");
-  var sensorData = req.body;
-  var lines = 0;
-  console.log("Processing " + sensorData.length + " lines of data...");
-  sensorData.forEach(function(object) {
-    checkDeviceData(object);
-    // Announce the device when the first line is processed
-    if(lines === 0) {
-      announce(object.device);
+  var device = req.params.device;
+  checkRegistration(device, function(registered) {
+    if(registered) {
+      var sensorData = req.body;
+      var lines = 0;
+      console.log("Processing " + sensorData.length + " lines of data...");
+      sensorData.forEach(function(object) {
+        checkDeviceData(object);
+        // Announce the device when the first line is processed
+        if(lines === 0) {
+          announce(object.device);
+        } else {
+          lines++;
+        }
+      })
+      res.json({
+        operation: 'POST',
+        status: 'OK'
+      });
     } else {
-      lines++;
+      res.status(403).json({
+        operation: 'POST',
+        status: 'NON_AUTHORIZED'
+      });
     }
-  })
-  res.json({
-    operation: 'POST',
-    message: 'OK'
   });
 };
 
@@ -52,11 +62,57 @@ exports.save = function(req, res) {
 * Get time function
 */
 exports.getTime = function(req, res) {
-  console.log("Receiving data from device " + req.query.device);
-  announce(req.query.device);
-  res.send(Date.now() + '\n');
-  res.end();
+  console.log("GET");
+  var device = req.params.device;
+  checkRegistration(device, function(registered) {
+    if(registered) {
+      console.log("Receiving data from device " + device);
+      announce(device);
+      // Get the messages for the device
+      getMessages(device, function(error, results) {
+        console.log(results);
+        // The first message is aways the timestamp
+        var messages = Date.now() + '\n';
+        // Process other messages
+        for(var m = 0; m<results.length; m++) {
+          messages += results[m].message + '\n';
+        }
+        res.send(messages);
+        res.end();
+        clearMessages(results);
+      })
+    } else {
+      res.status(403).json({
+        operation: 'GET',
+        status: 'NON_AUTHORIZED'
+      });
+    }
+  });
 };
+
+/**
+* Get Messages for device
+*/
+function getMessages(device, fn) {
+  console.log("Getting messages for device " + device + "...");
+  var chk = pool.query({
+    sql : 'select ID, message from `Messages` where `device` = ? and ( `delivery_type` = "TRANSIENT" and  readDate is null ) or (`delivery_type` = "PERSISTENT")',
+    values : [device]
+ }, function (error, results, fields) {
+   fn(error, results);
+ });
+}
+
+/**
+* Clears the received messages
+*/
+function clearMessages(messages) {
+  console.log("Clearing received messages...");
+  for(var m = 0; m<messages.length; m++) {
+    console.log("Clearing message ID " + messages[m].ID + "...");
+    pool.query('update `Messages` set readDate = NOW() where ID = ?', messages[m].ID);
+  }
+}
 
 /*
 * Pre insert tests
@@ -139,6 +195,26 @@ function saveFact(fact) {
       console.log("Data successfuly persisted to database...");
     }
   });
+}
+
+/**
+* Check if device is registered on Meccano IoT Gateway
+**/
+function checkRegistration(device, fn) {
+  console.log("Checking registration of device " + device + "...");
+  // Check if the device is registered on the gateway
+  if(process.env.CHECK_AUTH_TEST) {
+    var chk = pool.query({
+        sql : 'select count(*) as registered from `Registration` where device = ? and registrationDate is not null',
+        values : [device]
+     }, function (error, results, fields) {
+       fn( (!error && results[0] && results[0].registered === 1 ) );
+     });
+  // Else skip the test
+  } else {
+    console.log("CHECK_AUTH_TEST skipped.");
+    fn(true);
+  }
 }
 
 /**
