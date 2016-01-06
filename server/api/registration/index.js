@@ -20,12 +20,15 @@
 'use strict';
 
 var express = require('express');
-var controller = require('./gateway.controller');
+var controller = require('./registration.controller');
 
 var router = express.Router();
 
-// Routes for Root
-router.get('/:device', controller.getTime);
-router.post('/:device', controller.save);
+// Routes for /api/registration/
+router.get('/:device', controller.get);
+router.post('/', controller.post);
+router.delete('/:device', controller.delete);
+router.put('/', controller.put);
+
 
 module.exports = router;
