@@ -137,6 +137,8 @@ export CHECK_ZERO_TEST=false
 This is the default behaviour of the gateway.
 If you want to skip this test, you should set the environment variable to **false**.
 
+**CHECK_AUTH_TEST**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
+
 **PORT**: Begin accepting connections on the specified `port.` When this variable is specified the Gateway ignore `port` write on the config  file. A port value of zero will assign a random port.
 
 Example:
@@ -153,13 +155,21 @@ Example:
 export HOSTNAME=mydomain.domain
 ```
 
+
 ## Device Registration API
+
+Due to security constraints, the access will be granted only to registered boards/devices.
+The registration process works the following way:
+
+1. You need to Register the device in the gateway, using the API.
+2. Registration process finishes when the device access the gateway and send its acknowledgment data.
+3. At any time, if you need to revoke the access to a device, you should unregister it, using the API.
+4. At any time, you may check the registration status of each device.
 
 
 ### Registering a new Device
 
-Due to security constraints, the access will be denied to non-registered boards/devices.
-You need to register the device in the gateway:
+To register the device in the gateway:
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{ "device":"99:99:99:99:99:99", "device_group": 1 }' 'http://gateway_address/api/registration'
@@ -195,3 +205,79 @@ curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'
 ```
 
 - 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
+
+
+
+
+## Message API
+
+Message API is used to send messages/commands to devices.
+You may send a pre-built **REBOOT** command to Meccano board and it will restart.
+
+You may implement your own commands. Examples:
+
+- **BLINK**: for device blinking a led attached to a digital port;
+- **BUZZ_ON** and **BUZZ_OFF**: in order to activate/deactivate a BUZZ module;
+- **RELAY_ON** and **RELAY_OFF**: switching on and off an appliance or lamp;
+- **ROTATE LEFT 45** : command a servo motor to rotate left 45 degrees.
+
+
+### Sending messages to device
+
+You may send a message to any device using the following command/api:
+
+```
+curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H "Postman-Token: d9da6c25-d1d5-8546-a1ce-ff2e6647a2b6" -d '{
+    "device": "18:fe:34:fd:b2:a8",
+    "sender": "SYSTEM",
+    "delivery_type": "TRANSIENT",
+    "message": "REBOOT"
+}' 'http://gateway_address/api/messages/'
+```
+
+- Device id is the mac-address of the meccano board.
+
+- There are two delivery types of message:
+
+1. **TRANSIENT**: that kind of message will be cleared by Meccano IoT gateway after delivery;
+2. **PERSISTENT**: that kind of message will be permanent, not cleared by gateway after delivery;
+
+- You must specify the **sender** attribute. If you don't want to detail the sender, use **SYSTEM**.
+
+The message should be the pre-built **REBOOT** or any other custom message you want to implement on device.
+
+
+
+### List the messages of a device
+
+You may list all the messages of a device:
+
+```
+curl -X GET 'http://localhost:3000/api/messages/device/:device'
+```
+
+- device parameter is the mac-address, for example: 18:fe:34:fd:b2:a8
+
+
+
+### Get the message information
+
+It's possible to access a message, using the GET operation of the API:
+
+```
+curl -X GET 'http://localhost:3000/api/messages/:id'
+```
+
+- where id is the ID of the message you want to access to.
+
+
+
+### Remove a message
+
+You may remove a command/message for the device using the API:
+
+```
+curl -X DELETE 'http://localhost:3000/api/messages/:id'
+```
+
+- where id is the ID of the message you want to access to.

@@ -31,11 +31,7 @@ var pool = mysql.createPool(config.mysql);
 exports.post = function(req, res) {
   console.log("POST");
   var registrationData = req.body;
-  saveRegistration(registrationData);
-  res.json({
-    operation: 'POST',
-    message: 'WAITING_ACKNOWLEDGEMENT'
-  });
+  saveRegistration(registrationData, res);
 };
 
 /*
@@ -43,7 +39,7 @@ exports.post = function(req, res) {
 */
 exports.get = function(req, res) {
   console.log("GET");
-  var device = req.query.device;
+  var device = req.params.device;
   getRegistration(device, res);
 };
 
@@ -61,20 +57,29 @@ exports.put = function(req, res) {
 */
 exports.delete = function(req, res) {
   console.log("DELETE");
-  var device = req.query.device;
+  var device = req.params.device;
   deleteRegistration(device, res)
 };
 
 /**
 * Saves the object to the database
 */
-function saveRegistration(object) {
+function saveRegistration(object, res) {
   console.log("Persisting registration information to the database...");
-  var op = pool.query('insert into Registration set ?', object, function(errop, result) {
-    if (errop) {
-      console.error('Error persisting object:', errop);
+  var op = pool.query('insert into Registration set ?', object, function(error, result) {
+    if (error) {
+      console.error('Error persisting object:', error);
+      res.status(500).json({
+        operation: 'POST',
+        status: 'INTERNAL_ERROR',
+        cause: error
+      });
     } else {
       console.log("Data successfuly persisted to database...");
+      res.status(200).json({
+        operation: 'POST',
+        status: 'WAITING_ACKNOWLEDGEMENT'
+      });
     }
   });
 }
@@ -88,7 +93,7 @@ function getRegistration(device, res) {
     if (error) {
       res.json({
         'operation' : 'GET',
-        'message' : 'INTERNAL_ERROR',
+        'status' : 'INTERNAL_ERROR',
         'cause' : error
       });
       return;
@@ -134,8 +139,8 @@ function deleteRegistration(device, res) {
   var op = pool.query('delete from Registration where `device` = ?', device, function(error, result, fields) {
     if (error) {
       res.json({
-        'operation' : 'GET',
-        'message' : 'INTERNAL_ERROR',
+        'operation' : 'DELETE',
+        'status' : 'INTERNAL_ERROR',
         'cause' : error
       });
     } else {
@@ -151,7 +156,7 @@ function deleteRegistration(device, res) {
 
 
 /**
-* Acknowledge registration 
+* Acknowledge registration
 */
 function acknowledgeRegistration(object, res) {
   console.log("Acknowledging registration information...");
@@ -159,7 +164,7 @@ function acknowledgeRegistration(object, res) {
     if(!errorq && results.length === 1) {
       console.log(results);
       var op = pool.query( { sql : 'update `Registration` set `registrationDate` = ? where `device` = ? ',
-                             values : [(new Date()), object.device] },
+                             values : [( new Date() ), object.device] },
                              function(error, result) {
         if (error) {
           console.error('Error updating object:', error);
@@ -173,5 +178,4 @@ function acknowledgeRegistration(object, res) {
       res.json("UNKNOWN_DEVICE");
     }
   });
-
 }
