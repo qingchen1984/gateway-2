@@ -33,8 +33,8 @@ require('./express')(app);
 
 require('./routes')(app);
 // Start server
-var port = process.env.PORT || config.port;
-var ip = process.env.IP || config.ip;
-server.listen(port, ip, function () {
+var PORT = process.env.PORT || config.port;
+var HOSTNAME = process.env.HOSTNAME || config.hostname;
+server.listen(PORT, HOSTNAME, function () {
   console.log('Meccano IoT Gateway listening on %d, in %s mode', config.port, app.get('env'));
 });
