@@ -10,7 +10,7 @@ Meccano project is a multi-purpose IoT (Internet of Things) board and software p
 
 Different from other ESP8266 projects, Meccano board has been heavily tested in retail stores and adjusted to be safe against RF (radio frequency) interferences. The physical store is an inhospitable environment since there are several hundreds of electronic products, such as TVs, computers, sound and home theaters as well as electronic home appliances.
 
-The project is still in its early stages and will evolve in the future. Magazine Luiza will plan the backlog and sponsor the project. It has been open-sourced because it´s the first initiative to create a board based on ESP8266 in Brazil and we are really excited with the possibilities. Magazine Luiza has a passion for innovations and contribution to the development of technology. So you are invited to join us because your support/collaboration is welcome! .
+The project is still in its early stages and will evolve in the future. Magazine Luiza will plan the backlog and sponsor the project. It has been open-sourced because it´s the first initiative to create a board based on ESP8266 in Brazil and we are really excited with the possibilities. Magazine Luiza has a passion for innovations and contribution to the development of technology. So you are invited to join us because your support/collaboration is welcome!
 
 
 
@@ -31,32 +31,34 @@ For installation, you should prepare the database first. Be sure to have a MySQL
 
 You need to create the ERD table model in the database. Connect to your MySQL instance and execute the following script:
 
+```
 /app/gateway/sql/schema.sql
+```
 
 The schema will create the IOTDB database as well as the relational table model.
 
 
-
-### configuration
+### Configuration
 
 Configure the config/config.yml file as follows:
 
-    default:
-      port: 80
-      mysql:
-        host: 'host_name'
-        port: 3306
-        user: 'user'
-        password: 'password'
-        database: 'IOTDB'
-        connectionLimit: 10
-      statistics:
-        sigmas: 6
+```
+default:
+  port: 80
+  mysql:
+    host: 'host_name'
+    port: 3306
+    user: 'user'
+    password: 'password'
+    database: 'IOTDB'
+    connectionLimit: 10
+  statistics:
+    sigmas: 6
+```
 
-You should configure the host, port, user, password parameters.
+You should configure the `host`, `port`, `user`, `password` `parameters`.
 If you have a high concurrency, you must increase the connectionLimit accordingly.
 Leave the statistics session and "sigmas" parameter as is.
-
 
 
 ### Installation / Deployment
@@ -72,7 +74,7 @@ The Meccano IoT Gateway can run on several infrastructure:
 #### Amazon Elastic Beanstalk
 
 Be sure you have the MySQL database instance and config.yml ready.
-Create a zip file /app/gateway/meccano.zip with the directory /app/gateway.
+Create a zip file `/app/gateway/meccano.zip` with the directory `/app/gateway`.
 Deploy the zip file in to ELB service using the webconsole or command line tool (aws)
 After deployment the application will be started automatically.
 
@@ -80,14 +82,16 @@ After deployment the application will be started automatically.
 
 #### Bare metal servers or Virtual Machines
 
-`
+```
 cd /app/gateway
 npm Install
-`
+```
 
 To start the app:
 
-`npm start`
+```
+npm start
+```
 
 
 
@@ -105,15 +109,18 @@ Meccano IoT Gateway has some environment variables that control the behaviour of
 
 Example:
 
-`export NODE_ENV=prod`
+```
+export NODE_ENV=prod
+```
 
 And in the config.yml file you may specify different environment variables:
 
-
-    default:
-      port: 8080
-    prod:
-      port: 80
+```
+default:
+  port: 8080
+prod:
+  port: 80
+```
 
 
 **CHECK_ZERO_TEST**: the gateway will discard zero data from devices/sensors.
@@ -122,7 +129,9 @@ If you want to accept zeroes, you should define this variable to **false**.
 
 Example:
 
-`export CHECK_ZERO_TEST=false`
+```
+export CHECK_ZERO_TEST=false
+```
 
 **CHECK_STATISTIC_TEST**: the Meccano Service Manager evaluates the sensors and produces the statistics of each sensor in the table DeviceStatistics periodically. If the information received deviates from the average in a significative way, the data will be considered as noise and automatically discarded by the gateway, otherwise it will be accepted and recorded on the table Facts, in the correct channel.
 This is the default behaviour of the gateway.
@@ -130,7 +139,21 @@ If you want to skip this test, you should set the environment variable to **fals
 
 **CHECK_AUTH_TEST**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
 
+**PORT**: Begin accepting connections on the specified `port.` When this variable is specified the Gateway ignore `port` write on the config  file. A port value of zero will assign a random port.
 
+Example:
+
+```
+export PORT=8080
+```
+
+**HOSTNAME**: Begin accepting connections on the specified `HOSTNAME`. If the hostname is omitted, the server will accept connections on any IPv6 address (`::`) when IPv6 is available, or any IPv4 address (`0.0.0.0`) otherwise.
+
+Example:
+
+```
+export HOSTNAME=mydomain.domain
+```
 
 
 ## Device Registration API
@@ -144,13 +167,13 @@ The registration process works the following way:
 4. At any time, you may check the registration status of each device.
 
 
-
 ### Registering a new Device
 
 To register the device in the gateway:
-`
+
+```
 curl -X POST -H "Content-Type: application/json" -d '{ "device":"99:99:99:99:99:99", "device_group": 1 }' 'http://gateway_address/api/registration'
-`
+```
 
 - 99:99:99:99:99:99 is the mac-address/device id of the meccano board/esp8266.
 
@@ -166,7 +189,9 @@ You should choose a device_group for your device. This attribute is used to grou
 
 You may check the device registration any time, calling the API:
 
-`curl -X GET -H "Content-Type: application/json" 'http://gateway_address/api/registration?device=99:99:99:99:99:99'`
+```
+curl -X GET -H "Content-Type: application/json" 'http://gateway_address/api/registration?device=99:99:99:99:99:99'
+```
 
 - 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
 
@@ -175,7 +200,9 @@ You may check the device registration any time, calling the API:
 
 You may unregister the device calling the API:
 
-`curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'`
+```
+curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'
+```
 
 - 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
 
@@ -199,12 +226,14 @@ You may implement your own commands. Examples:
 
 You may send a message to any device using the following command/api:
 
-`curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H "Postman-Token: d9da6c25-d1d5-8546-a1ce-ff2e6647a2b6" -d '{
+```
+curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H "Postman-Token: d9da6c25-d1d5-8546-a1ce-ff2e6647a2b6" -d '{
     "device": "18:fe:34:fd:b2:a8",
     "sender": "SYSTEM",
     "delivery_type": "TRANSIENT",
     "message": "REBOOT"
-}' 'http://gateway_address/api/messages/'`
+}' 'http://gateway_address/api/messages/'
+```
 
 - Device id is the mac-address of the meccano board.
 
@@ -223,7 +252,9 @@ The message should be the pre-built **REBOOT** or any other custom message you w
 
 You may list all the messages of a device:
 
-`curl -X GET 'http://localhost:3000/api/messages/device/:device'`
+```
+curl -X GET 'http://localhost:3000/api/messages/device/:device'
+```
 
 - device parameter is the mac-address, for example: 18:fe:34:fd:b2:a8
 
@@ -233,7 +264,9 @@ You may list all the messages of a device:
 
 It's possible to access a message, using the GET operation of the API:
 
-`curl -X GET 'http://localhost:3000/api/messages/:id'`
+```
+curl -X GET 'http://localhost:3000/api/messages/:id'
+```
 
 - where id is the ID of the message you want to access to.
 
@@ -243,6 +276,8 @@ It's possible to access a message, using the GET operation of the API:
 
 You may remove a command/message for the device using the API:
 
-`curl -X DELETE 'http://localhost:3000/api/messages/:id'`
+```
+curl -X DELETE 'http://localhost:3000/api/messages/:id'
+```
 
 - where id is the ID of the message you want to access to.

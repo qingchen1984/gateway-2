@@ -34,6 +34,8 @@ require('./express')(app);
 
 require('./routes')(app);
 // Start server
-server.listen(config.port, config.ip, function () {
+var PORT = process.env.PORT || config.port;
+var HOSTNAME = process.env.HOSTNAME || config.hostname;
+server.listen(PORT, HOSTNAME, function () {
   console.log('Meccano IoT Gateway listening on %d, in %s mode', config.port, app.get('env'));
 });
