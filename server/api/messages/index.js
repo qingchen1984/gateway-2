@@ -16,20 +16,18 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 'use strict';
 
-var errors = require('./components/errors');
+var express = require('express');
+var controller = require('./messages.controller');
 
-module.exports = function(app) {
+var router = express.Router();
 
-  app.use('/', require('./api/gateway'));
-  app.use('/api/messages', require('./api/messages'));
-  app.use('/api/registration', require('./api/registration'))
+// Routes for /api/messages/
+router.get('/:id', controller.get);
+router.post('/', controller.post);
+router.delete('/:id', controller.delete);
+router.get('/device/:device', controller.getByDevice);
 
-  // All undefined asset or api routes should return a 404
-  app.route('/:url(api|auth|components|app|bower_components|assets)/*')
-   .get(errors[404]);
-
-  // All other routes should redirect to the index.html
-  app.route('/*').get(errors[404]);
-};
+module.exports = router;
