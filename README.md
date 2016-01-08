@@ -240,6 +240,14 @@ curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'
 
 
 
+# Meccano APIs
+
+Meccano IoT Gateway offers an API catalog for Registration and Messaging. In future releases there will be several others.
+You may download the Postman test collection here:
+
+https://www.getpostman.com/collections/ea7277b4935963aa0d3f
+
+
 
 ## Message API
 
