@@ -61,7 +61,7 @@ exports.save = function(req, res) {
 /*
 * Get time function
 */
-exports.getTime = function(req, res) {
+exports.getMessages = function(req, res) {
   console.log("GET");
   var device = req.params.device;
   checkRegistration(device, function(registered) {
@@ -75,7 +75,7 @@ exports.getTime = function(req, res) {
         var messages = Date.now() + '\n';
         // Process other messages
         for(var m = 0; m<results.length; m++) {
-          messages += results[m].message + '\n';
+          messages += results[m].message + '\r\n';
         }
         res.send(messages);
         res.end();
