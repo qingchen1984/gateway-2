@@ -44,12 +44,17 @@ Configure the config/config.yml file as follows:
 
 ```
 default:
-  port: 80
+  port: 3000
+  timezone: Brazil/East
+  tests:
+    auth: true
+    statistic: true
+    zero: true
   mysql:
-    host: 'host_name'
+    host: 'mysql_database_address'
     port: 3306
     user: 'user'
-    password: 'password'
+    password: 'pass'
     database: 'IOTDB'
     connectionLimit: 10
   statistics:
@@ -101,11 +106,14 @@ Not available yet.
 
 
 
-### Configuration
+### Environment Configuration
 
-Meccano IoT Gateway has some environment variables that control the behaviour of the application
+For each yaml configuration parameter there is a corresponding environment variable that Meccano IoT Gateway uses to control the behaviour of the application. You may choose to use yaml, environment configuration or both.
 
-**NODE_ENV**: name of the environment. You may set this variable according to the name of your environment, for example prod, dev, test.
+
+#### General configuration
+
+- **NODE_ENV**: name of the environment. You may set this variable according to the name of your environment, for example prod, dev, test.
 
 Example:
 
@@ -123,7 +131,28 @@ prod:
 ```
 
 
-**CHECK_ZERO_TEST**: the gateway will discard zero data from devices/sensors.
+- **TZ**: the default value is **Brazil/East**. You should change your timezone in order gateway persists data correctly.
+
+- **PORT**: Begin accepting connections on the specified `port.` When this variable is specified the Gateway ignore `port` write on the config  file. A port value of zero will assign a random port.
+
+Example:
+
+```
+export PORT=8080
+```
+
+- **HOSTNAME**: Begin accepting connections on the specified `HOSTNAME`. If the hostname is omitted, the server will accept connections on any IPv6 address (`::`) when IPv6 is available, or any IPv4 address (`0.0.0.0`) otherwise.
+
+Example:
+
+```
+export HOSTNAME=mydomain.domain
+```
+
+
+#### Check test configuration
+
+- **TESTS_ZERO**: the gateway will discard zero data from devices/sensors.
 This is the default behaviour of the gateway.
 If you want to accept zeroes, you should define this variable to **false**.
 
@@ -133,27 +162,36 @@ Example:
 export CHECK_ZERO_TEST=false
 ```
 
-**CHECK_STATISTIC_TEST**: the Meccano Service Manager evaluates the sensors and produces the statistics of each sensor in the table DeviceStatistics periodically. If the information received deviates from the average in a significative way, the data will be considered as noise and automatically discarded by the gateway, otherwise it will be accepted and recorded on the table Facts, in the correct channel.
+- **TESTS_STATISTIC**: the Meccano Service Manager evaluates the sensors and produces the statistics of each sensor in the table DeviceStatistics periodically. This verification test is useful for some industrial and retail applications. If data received deviates from the average in a significative way, the data will be considered as noise and automatically discarded by the gateway, otherwise it will be accepted and recorded on the table Facts, in the correct channel. The statistic is based on Z-Distribution (Normal) but in future releases we may include other useful such as S, T and others.
 This is the default behaviour of the gateway.
 If you want to skip this test, you should set the environment variable to **false**.
 
-**CHECK_AUTH_TEST**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
+- **TESTS_AUTH**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
 
-**PORT**: Begin accepting connections on the specified `port.` When this variable is specified the Gateway ignore `port` write on the config  file. A port value of zero will assign a random port.
 
-Example:
+#### Database configuration
 
-```
-export PORT=8080
-```
+The parameters bellow control the connection and behaviour of the RDBMS.
 
-**HOSTNAME**: Begin accepting connections on the specified `HOSTNAME`. If the hostname is omitted, the server will accept connections on any IPv6 address (`::`) when IPv6 is available, or any IPv4 address (`0.0.0.0`) otherwise.
+- **MYSQL_HOST**: database hostname or ip address.
 
-Example:
+- **MYSQL_PORT**: database port.
 
-```
-export HOSTNAME=mydomain.domain
-```
+- **MYSQL_USER**: database user.
+
+- **MYSQL_PASSWORD**: database password.
+
+- **MYSQL_DATABASE**: database name or instance id.
+
+- **MYSQL_CONNECTIONLIMIT**: maximum number of connections.
+
+
+
+#### Statistic configuration
+
+**STATISTICS_SIGMAS**: this option will be valid only if the CHECK_STATISTIC_TEST is enabled. This controls the behaviour of the gateway regarding the deviation of data. Every information received that deviates more than the number of sigmas will be considered noise and discarded by the gateway. For six-sigma, there is a probability of 99.99966%. The default value for this parameter is 6 sigmas.
+
+
 
 
 ## Device Registration API
@@ -206,6 +244,14 @@ curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'
 
 - 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
 
+
+
+# Meccano APIs
+
+Meccano IoT Gateway offers an API catalog for Registration and Messaging. In future releases there will be several others.
+You may download the Postman test collection here:
+
+https://www.getpostman.com/collections/ea7277b4935963aa0d3f
 
 
 

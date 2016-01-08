@@ -25,7 +25,7 @@ var controller = require('./gateway.controller');
 var router = express.Router();
 
 // Routes for Root
-router.get('/:device', controller.getTime);
+router.get('/:device', controller.getMessages);
 router.post('/:device', controller.save);
 
 module.exports = router;

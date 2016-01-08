@@ -18,21 +18,20 @@
 */
 
 'use strict';
-// Set default node environment to development
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-process.env.CONFIG_FILE = process.env.CONFIG_FILE ||  './config/config.yml';
-process.env.CHECK_AUTH_TEST = process.env.CHECK_AUTH_TEST || true;
-process.env.CHECK_STATISTIC_TEST = process.env.CHECK_STATISTIC_TEST || true;
-process.env.CHECK_ZERO_TEST = process.env.CHECK_ZERO_TEST || true;
 
 var express = require('express');
-var config = require('./config');
+
+// Set the environment, location of the config file and load configuration
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.CONFIG_FILE = process.env.CONFIG_FILE ||  './config/config.yml';
+var config  = require('./config');
+
 // Setup server
 var app = express();
 var server = require('http').createServer(app);
 require('./express')(app);
-
 require('./routes')(app);
+
 // Start server
 var PORT = process.env.PORT || config.port;
 var HOSTNAME = process.env.HOSTNAME || config.hostname;
