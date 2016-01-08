@@ -112,8 +112,8 @@ function getRegistration(device, res) {
       if(r.registrationDate !== null) {
         res.json({
           'operation' : 'GET',
-          'device_group' : r.device,
-          'group' : r.device_group,
+          'device' : r.device,
+          'device_group' : r.device_group,
           'submissionDate': r.creationDate,
           'registrationDate' : r.registrationDate,
           'status' : 'REGISTERED'
@@ -122,7 +122,7 @@ function getRegistration(device, res) {
         res.json({
           'operation' : 'GET',
           'device' : r.device,
-          'device_group' : r.group,
+          'device_group' : r.device_group,
           'submissionDate' : r.creationDate,
           'status' : 'WAITING_ACKNOWLEDGEMENT'
         });
