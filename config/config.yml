@@ -1,10 +1,15 @@
 default:
   port: 3000
+  timezone: Brazil/East
+  check_tests:
+    auth: true
+    statistic: true
+    zero: true
   mysql:
-    host: '192.168.99.100'
+    host: 'database_address'
     port: 3306
-    user: 'root'
-    password: 'root'
+    user: 'user'
+    password: 'password'
     database: 'IOTDB'
     connectionLimit: 10
   statistics:
