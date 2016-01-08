@@ -113,7 +113,7 @@ For each yaml configuration parameter there is a corresponding environment varia
 
 #### General configuration
 
-**NODE_ENV**: name of the environment. You may set this variable according to the name of your environment, for example prod, dev, test.
+- **NODE_ENV**: name of the environment. You may set this variable according to the name of your environment, for example prod, dev, test.
 
 Example:
 
@@ -131,9 +131,9 @@ prod:
 ```
 
 
-**TZ**: the default value is **Brazil/East**. You should change your timezone in order gateway persists data correctly.
+- **TZ**: the default value is **Brazil/East**. You should change your timezone in order gateway persists data correctly.
 
-**PORT**: Begin accepting connections on the specified `port.` When this variable is specified the Gateway ignore `port` write on the config  file. A port value of zero will assign a random port.
+- **PORT**: Begin accepting connections on the specified `port.` When this variable is specified the Gateway ignore `port` write on the config  file. A port value of zero will assign a random port.
 
 Example:
 
@@ -141,7 +141,7 @@ Example:
 export PORT=8080
 ```
 
-**HOSTNAME**: Begin accepting connections on the specified `HOSTNAME`. If the hostname is omitted, the server will accept connections on any IPv6 address (`::`) when IPv6 is available, or any IPv4 address (`0.0.0.0`) otherwise.
+- **HOSTNAME**: Begin accepting connections on the specified `HOSTNAME`. If the hostname is omitted, the server will accept connections on any IPv6 address (`::`) when IPv6 is available, or any IPv4 address (`0.0.0.0`) otherwise.
 
 Example:
 
@@ -152,7 +152,7 @@ export HOSTNAME=mydomain.domain
 
 #### Check test configuration
 
-**CHECK_ZERO_TEST**: the gateway will discard zero data from devices/sensors.
+- **CHECK_ZERO_TEST**: the gateway will discard zero data from devices/sensors.
 This is the default behaviour of the gateway.
 If you want to accept zeroes, you should define this variable to **false**.
 
@@ -162,23 +162,29 @@ Example:
 export CHECK_ZERO_TEST=false
 ```
 
-**CHECK_STATISTIC_TEST**: the Meccano Service Manager evaluates the sensors and produces the statistics of each sensor in the table DeviceStatistics periodically. If the information received deviates from the average in a significative way, the data will be considered as noise and automatically discarded by the gateway, otherwise it will be accepted and recorded on the table Facts, in the correct channel. The statistic is based on Z-Distribution (Normal) but in future releases we may include other useful such as S, T and others.
+- **CHECK_STATISTIC_TEST**: the Meccano Service Manager evaluates the sensors and produces the statistics of each sensor in the table DeviceStatistics periodically. This verification test is useful for some industrial and retail applications. If data received deviates from the average in a significative way, the data will be considered as noise and automatically discarded by the gateway, otherwise it will be accepted and recorded on the table Facts, in the correct channel. The statistic is based on Z-Distribution (Normal) but in future releases we may include other useful such as S, T and others.
 This is the default behaviour of the gateway.
 If you want to skip this test, you should set the environment variable to **false**.
 
-**CHECK_AUTH_TEST**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
+- **CHECK_AUTH_TEST**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
 
 
 #### Database configuration
 
 The parameters bellow control the connection and behaviour of the RDBMS.
 
-**MYSQL_HOST**: database hostname or ip address.
-**MYSQL_PORT**: database port.
-**MYSQL_USER**: database user.
-**MYSQL_PASSWORD**: database password.
-**MYSQL_DATABASE**: database name or instance id.
-**MYSQL_CONNECTIONLIMIT**: maximum number of connections.
+- **MYSQL_HOST**: database hostname or ip address.
+
+- **MYSQL_PORT**: database port.
+
+- **MYSQL_USER**: database user.
+
+- **MYSQL_PASSWORD**: database password.
+
+- **MYSQL_DATABASE**: database name or instance id.
+
+- **MYSQL_CONNECTIONLIMIT**: maximum number of connections.
+
 
 
 #### Statistic configuration
@@ -238,6 +244,14 @@ curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'
 
 - 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
 
+
+
+# Meccano APIs
+
+Meccano IoT Gateway offers an API catalog for Registration and Messaging. In future releases there will be several others.
+You may download the Postman test collection here:
+
+https://www.getpostman.com/collections/ea7277b4935963aa0d3f
 
 
 
