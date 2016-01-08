@@ -120,16 +120,16 @@ function clearMessages(messages) {
 function checkDeviceData(fact) {
   console.log("Checking data consistency...");
   // Discard data if it's zero (0)
-  if(process.env.CHECK_ZERO_TEST) {
+  if(process.env.TESTS_ZERO) {
     console.log("Applying CHECK_ZERO_TEST...");
     if(fact.data === 0) {
-      console.warn("CHECK_ZERO_TEST failed: group=%d device=%d sensor=%d data=%d", fact.group,fact.device,fact.sensor,fact.data);
+      console.warn("TESTS_ZERO failed: group=%d device=%d sensor=%d data=%d", fact.group,fact.device,fact.sensor,fact.data);
       return;
     } else {
-      console.log("CHECK_ZERO_TEST passed.");
+      console.log("TESTS_ZERO passed.");
     }
   } else {
-    console.log("CHECK_ZERO_TEST skipped.");
+    console.log("TESTS_ZERO skipped.");
   }
 
   // Discard data if it's beyound the number of configured sigmas (configuration in config.yml)
@@ -145,17 +145,17 @@ function checkDeviceData(fact) {
             console.warn('Noise ignored: group=%d device=%d sensor=%d data=%d sigmas=%d deviation=%d', fact.group,fact.device,fact.sensor,fact.data,config.statistics.sigmas,deviation);
             return;
           } else {
-              console.log("CHECK_STATISTIC_TEST passed.");
+              console.log("TESTS_STATISTIC passed.");
               saveFact(fact);
           }
         } else {
           console.log('Device Statistics not found: group=%d device=%d sensor=%d',fact.group,fact.device,fact.sensor);
-          console.log("CHECK_STATISTIC_TEST skipped.");
+          console.log("TESTS_STATISTIC skipped.");
           saveFact(fact);
         }
       });
   } else {
-    console.log("CHECK_STATISTIC_TEST skipped.");
+    console.log("TESTS_STATISTIC skipped.");
     saveFact(fact);
   }
 }
@@ -203,7 +203,7 @@ function saveFact(fact) {
 function checkRegistration(device, fn) {
   console.log("Checking registration of device " + device + "...");
   // Check if the device is registered on the gateway
-  if(process.env.CHECK_AUTH_TEST) {
+  if(process.env.TESTS_AUTH) {
     var chk = pool.query({
         sql : 'select count(*) as registered from `Registration` where device = ? and registrationDate is not null',
         values : [device]
@@ -212,7 +212,7 @@ function checkRegistration(device, fn) {
      });
   // Else skip the test
   } else {
-    console.log("CHECK_AUTH_TEST skipped.");
+    console.log("TESTS_AUTH skipped.");
     fn(true);
   }
 }
