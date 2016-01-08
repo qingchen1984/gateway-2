@@ -72,7 +72,7 @@ exports.getMessages = function(req, res) {
       getMessages(device, function(error, results) {
         console.log(results);
         // The first message is aways the timestamp
-        var messages = Date.now() + '\n';
+        var messages = Date.now() + '\r\n';
         // Process other messages
         for(var m = 0; m<results.length; m++) {
           messages += results[m].message + '\r\n';
