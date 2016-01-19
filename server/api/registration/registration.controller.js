@@ -58,7 +58,8 @@ exports.put = function(req, res) {
 exports.delete = function(req, res) {
   console.log("DELETE");
   var device = req.params.device;
-  deleteRegistration(device, res)
+  deleteAnnouncement(device);
+  deleteRegistration(device, res);
 };
 
 /**
@@ -112,8 +113,8 @@ function getRegistration(device, res) {
       if(r.registrationDate !== null) {
         res.json({
           'operation' : 'GET',
-          'device_group' : r.device,
-          'group' : r.device_group,
+          'device' : r.device,
+          'device_group' : r.device_group,
           'submissionDate': r.creationDate,
           'registrationDate' : r.registrationDate,
           'status' : 'REGISTERED'
@@ -122,7 +123,7 @@ function getRegistration(device, res) {
         res.json({
           'operation' : 'GET',
           'device' : r.device,
-          'device_group' : r.group,
+          'device_group' : r.device_group,
           'submissionDate' : r.creationDate,
           'status' : 'WAITING_ACKNOWLEDGEMENT'
         });
@@ -136,7 +137,7 @@ function getRegistration(device, res) {
 */
 function deleteRegistration(device, res) {
   console.log("Unregistering device...");
-  var op = pool.query('delete from Registration where `device` = ?', device, function(error, result, fields) {
+  var op = pool.query('delete from `IOTDB`.`Registration` where `device` = ?', device, function(error, result, fields) {
     if (error) {
       res.json({
         'operation' : 'DELETE',
@@ -150,6 +151,21 @@ function deleteRegistration(device, res) {
         'device' : device,
         'status' : 'UNREGISTERED'
       });
+    }
+  });
+}
+
+/**
+* Unregister Device
+*/
+function deleteAnnouncement(device) {
+  console.log("Removing Announcement data for device " + device + "...");
+  var op = pool.query('delete from `IOTDB`.`Announcement` where `device` = ?', device, function(error, result, fields) {
+    if (error) {
+      console.log("Announcement data could not be removed.");
+      console.log(error);
+    } else {
+      console.log("Announcement data removed from database.");
     }
   });
 }
