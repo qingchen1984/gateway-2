@@ -48,6 +48,7 @@ DROP TABLE Registration;
 CREATE TABLE Registration (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
   device_group VARCHAR(20),
+  memo VARCHAR(1024),
   registrationDate DATETIME,
   creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
