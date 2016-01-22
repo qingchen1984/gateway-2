@@ -49,7 +49,8 @@ CREATE TABLE Registration (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
   device_group VARCHAR(20),
   registrationDate DATETIME,
-  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  memo VARCHAR(200) NULL
 );
 
 -- Create the message table
