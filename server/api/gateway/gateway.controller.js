@@ -65,6 +65,7 @@ exports.save = function(req, res) {
 exports.getMessages = function(req, res) {
   console.log("GET");
   var device = req.params.device;
+  console.log("Checking if device is registered...");
   checkRegistration(device, function(registered) {
     if(registered) {
       console.log("Receiving data from device " + device);
@@ -205,8 +206,7 @@ function saveFact(fact) {
 function saveRegistration(device) {
   console.log("Persisting registration information to the database...");
   var object = {
-      "device": device,
-      "device_group": 0
+      "device": device
   };
   var op = pool.query('insert into Registration set ?', object, function(error, result) {
     if (error) {
@@ -225,9 +225,11 @@ function checkRegistration(device, fn) {
   // Check if the device is registered on the gateway
   if(process.env.TESTS_AUTH) {
     var chk = pool.query({
-        sql : 'select count(*) as registered from `Registration` where device = ? and device_group <> 0',
+        sql : 'select count(*) as registered from `Registration` where device = ? and device_group is not null',
         values : [device]
      }, function (error, results, fields) {
+       console.log(results);
+       console.log("existe: " + isNaN(results));
        fn( (!error && results[0] && results[0].registered === 1 ) );
      });
   // Else skip the test
