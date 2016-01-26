@@ -257,7 +257,7 @@ function announce(device) {
     // If announcement data does not exist, inserts to the table
     if(results[0].count === 0) {
       console.log("Device " + device + " does not exists. Creating entry in Announcement table");
-      var opq = pool.query('insert into `IOTDB`.`Announcement` set ?', announcement, function(errop, result) {
+      var opq = pool.query('insert into `Announcement` set ?', announcement, function(errop, result) {
         if(errop) {
           console.error('(INSERT) Error announcing device ' + device);
           console.error(errop);
@@ -266,7 +266,7 @@ function announce(device) {
     // Updates the timestamp
     } else {
       console.log("Device " + device + " already exists. Updating Announcement table");
-      var op = pool.query( { sql: 'update `IOTDB`.`Announcement` set `lastAnnouncementDate` = ? where `device` = ? ',
+      var op = pool.query( { sql: 'update `Announcement` set `lastAnnouncementDate` = ? where `device` = ? ',
                              values : [ (new Date()), device ]
                            }, function(errop, result) {
         if(errop) {
@@ -274,6 +274,17 @@ function announce(device) {
           console.error(errop);
         }
       });
+    }
+  });
+  // Inserts into Announcement_History
+  var history = {
+    'device': device,
+    'announcementDate' : (new Date())
+  };
+  pool.query('insert into `Announcement_History` set ?', history, function(errop, result) {
+    if(errop) {
+      console.error('(INSERT) Error saving history of device ' + device);
+      console.error(errop);
     }
   });
 }
