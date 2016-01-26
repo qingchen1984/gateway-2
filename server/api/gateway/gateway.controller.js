@@ -50,6 +50,7 @@ exports.save = function(req, res) {
         status: 'OK'
       });
     } else {
+      saveRegistration(device);
       res.status(403).json({
         operation: 'POST',
         status: 'NON_AUTHORIZED'
@@ -64,6 +65,7 @@ exports.save = function(req, res) {
 exports.getMessages = function(req, res) {
   console.log("GET");
   var device = req.params.device;
+  console.log("Checking if device is registered...");
   checkRegistration(device, function(registered) {
     if(registered) {
       console.log("Receiving data from device " + device);
@@ -82,6 +84,7 @@ exports.getMessages = function(req, res) {
         clearMessages(results);
       })
     } else {
+      saveRegistration(device);
       res.status(403).json({
         operation: 'GET',
         status: 'NON_AUTHORIZED'
@@ -198,6 +201,23 @@ function saveFact(fact) {
 }
 
 /**
+* Saves the object to the database
+*/
+function saveRegistration(device) {
+  console.log("Persisting registration information to the database...");
+  var object = {
+      "device": device
+  };
+  var op = pool.query('insert into Registration set ?', object, function(error, result) {
+    if (error) {
+      console.error('Error persisting object:', error);
+    } else {
+      console.log("Data successfuly persisted to database...");
+    }
+  });
+}
+
+/**
 * Check if device is registered on Meccano IoT Gateway
 **/
 function checkRegistration(device, fn) {
@@ -205,9 +225,11 @@ function checkRegistration(device, fn) {
   // Check if the device is registered on the gateway
   if(process.env.TESTS_AUTH) {
     var chk = pool.query({
-        sql : 'select count(*) as registered from `Registration` where device = ? and registrationDate is not null',
+        sql : 'select count(*) as registered from `Registration` where device = ? and device_group is not null',
         values : [device]
      }, function (error, results, fields) {
+       console.log(results);
+       console.log("existe: " + isNaN(results));
        fn( (!error && results[0] && results[0].registered === 1 ) );
      });
   // Else skip the test
