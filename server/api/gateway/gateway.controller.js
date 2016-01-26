@@ -50,6 +50,7 @@ exports.save = function(req, res) {
         status: 'OK'
       });
     } else {
+      saveRegistration(device);
       res.status(403).json({
         operation: 'POST',
         status: 'NON_AUTHORIZED'
@@ -82,6 +83,7 @@ exports.getMessages = function(req, res) {
         clearMessages(results);
       })
     } else {
+      saveRegistration(device);
       res.status(403).json({
         operation: 'GET',
         status: 'NON_AUTHORIZED'
@@ -198,6 +200,24 @@ function saveFact(fact) {
 }
 
 /**
+* Saves the object to the database
+*/
+function saveRegistration(device) {
+  console.log("Persisting registration information to the database...");
+  var object = {
+      "device": device,
+      "device_group": 0
+  };
+  var op = pool.query('insert into Registration set ?', object, function(error, result) {
+    if (error) {
+      console.error('Error persisting object:', error);
+    } else {
+      console.log("Data successfuly persisted to database...");
+    }
+  });
+}
+
+/**
 * Check if device is registered on Meccano IoT Gateway
 **/
 function checkRegistration(device, fn) {
@@ -205,7 +225,7 @@ function checkRegistration(device, fn) {
   // Check if the device is registered on the gateway
   if(process.env.TESTS_AUTH) {
     var chk = pool.query({
-        sql : 'select count(*) as registered from `Registration` where device = ? and registrationDate is not null',
+        sql : 'select count(*) as registered from `Registration` where device = ? and device_group <> 0',
         values : [device]
      }, function (error, results, fields) {
        fn( (!error && results[0] && results[0].registered === 1 ) );
