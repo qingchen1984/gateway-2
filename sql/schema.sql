@@ -42,6 +42,14 @@ CREATE TABLE Announcement (
   lastAnnouncementDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create table Announcement_History
+DROP TABLE Announcement_History;
+
+CREATE TABLE Announcement_History (
+  device VARCHAR(20) NOT NULL,
+  announcementDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create table Registration
 DROP TABLE Registration;
 
