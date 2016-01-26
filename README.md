@@ -46,7 +46,7 @@ Configure the config/config.yml file as follows:
 default:
   port: 3000
   timezone: Brazil/East
-  check_tests:
+  tests:
     auth: true
     statistic: true
     zero: true
@@ -95,6 +95,10 @@ npm Install
 To start the app:
 
 ```
+# Set the environment variables
+# AWS_ACCESSKEYDI, AWS_SECRETACCESSKEY, MYSQL_HOST, MYSQL_PORT ...
+# or configure the ./config/config.yml file.
+# See the documentation below for more details.
 npm start
 ```
 
@@ -152,7 +156,7 @@ export HOSTNAME=mydomain.domain
 
 #### Check test configuration
 
-- **CHECK_ZERO_TEST**: the gateway will discard zero data from devices/sensors.
+- **TESTS_ZERO**: the gateway will discard zero data from devices/sensors.
 This is the default behaviour of the gateway.
 If you want to accept zeroes, you should define this variable to **false**.
 
@@ -162,11 +166,11 @@ Example:
 export CHECK_ZERO_TEST=false
 ```
 
-- **CHECK_STATISTIC_TEST**: the Meccano Service Manager evaluates the sensors and produces the statistics of each sensor in the table DeviceStatistics periodically. This verification test is useful for some industrial and retail applications. If data received deviates from the average in a significative way, the data will be considered as noise and automatically discarded by the gateway, otherwise it will be accepted and recorded on the table Facts, in the correct channel. The statistic is based on Z-Distribution (Normal) but in future releases we may include other useful such as S, T and others.
+- **TESTS_STATISTIC**: the Meccano Service Manager evaluates the sensors and produces the statistics of each sensor in the table DeviceStatistics periodically. This verification test is useful for some industrial and retail applications. If data received deviates from the average in a significative way, the data will be considered as noise and automatically discarded by the gateway, otherwise it will be accepted and recorded on the table Facts, in the correct channel. The statistic is based on Z-Distribution (Normal) but in future releases we may include other useful such as S, T and others.
 This is the default behaviour of the gateway.
 If you want to skip this test, you should set the environment variable to **false**.
 
-- **CHECK_AUTH_TEST**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
+- **TESTS_AUTH**: this environment variable controls the authentication process. The default value é true and when set, all devices should have the mac-address previously registered/acknowledged to the gateway before sending or receiving data.
 
 
 #### Database configuration

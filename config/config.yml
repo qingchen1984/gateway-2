@@ -1,7 +1,7 @@
 default:
   port: 3000
   timezone: Brazil/East
-  check_tests:
+  tests:
     auth: true
     statistic: true
     zero: true

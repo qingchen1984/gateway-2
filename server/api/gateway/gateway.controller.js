@@ -50,6 +50,7 @@ exports.save = function(req, res) {
         status: 'OK'
       });
     } else {
+      saveRegistration(device);
       res.status(403).json({
         operation: 'POST',
         status: 'NON_AUTHORIZED'
@@ -61,9 +62,10 @@ exports.save = function(req, res) {
 /*
 * Get time function
 */
-exports.getTime = function(req, res) {
+exports.getMessages = function(req, res) {
   console.log("GET");
   var device = req.params.device;
+  console.log("Checking if device is registered...");
   checkRegistration(device, function(registered) {
     if(registered) {
       console.log("Receiving data from device " + device);
@@ -72,16 +74,17 @@ exports.getTime = function(req, res) {
       getMessages(device, function(error, results) {
         console.log(results);
         // The first message is aways the timestamp
-        var messages = Date.now() + '\n';
+        var messages = Date.now() + '\r\n';
         // Process other messages
         for(var m = 0; m<results.length; m++) {
-          messages += results[m].message + '\n';
+          messages += results[m].message + '\r\n';
         }
         res.send(messages);
         res.end();
         clearMessages(results);
       })
     } else {
+      saveRegistration(device);
       res.status(403).json({
         operation: 'GET',
         status: 'NON_AUTHORIZED'
@@ -120,16 +123,16 @@ function clearMessages(messages) {
 function checkDeviceData(fact) {
   console.log("Checking data consistency...");
   // Discard data if it's zero (0)
-  if(process.env.CHECK_ZERO_TEST) {
+  if(process.env.TESTS_ZERO) {
     console.log("Applying CHECK_ZERO_TEST...");
     if(fact.data === 0) {
-      console.warn("CHECK_ZERO_TEST failed: group=%d device=%d sensor=%d data=%d", fact.group,fact.device,fact.sensor,fact.data);
+      console.warn("TESTS_ZERO failed: group=%d device=%d sensor=%d data=%d", fact.group,fact.device,fact.sensor,fact.data);
       return;
     } else {
-      console.log("CHECK_ZERO_TEST passed.");
+      console.log("TESTS_ZERO passed.");
     }
   } else {
-    console.log("CHECK_ZERO_TEST skipped.");
+    console.log("TESTS_ZERO skipped.");
   }
 
   // Discard data if it's beyound the number of configured sigmas (configuration in config.yml)
@@ -145,17 +148,17 @@ function checkDeviceData(fact) {
             console.warn('Noise ignored: group=%d device=%d sensor=%d data=%d sigmas=%d deviation=%d', fact.group,fact.device,fact.sensor,fact.data,config.statistics.sigmas,deviation);
             return;
           } else {
-              console.log("CHECK_STATISTIC_TEST passed.");
+              console.log("TESTS_STATISTIC passed.");
               saveFact(fact);
           }
         } else {
           console.log('Device Statistics not found: group=%d device=%d sensor=%d',fact.group,fact.device,fact.sensor);
-          console.log("CHECK_STATISTIC_TEST skipped.");
+          console.log("TESTS_STATISTIC skipped.");
           saveFact(fact);
         }
       });
   } else {
-    console.log("CHECK_STATISTIC_TEST skipped.");
+    console.log("TESTS_STATISTIC skipped.");
     saveFact(fact);
   }
 }
@@ -198,21 +201,40 @@ function saveFact(fact) {
 }
 
 /**
+* Saves the object to the database
+*/
+function saveRegistration(device) {
+  console.log("Persisting registration information to the database...");
+  var object = {
+      "device": device
+  };
+  var op = pool.query('insert into Registration set ?', object, function(error, result) {
+    if (error) {
+      console.error('Error persisting object:', error);
+    } else {
+      console.log("Data successfuly persisted to database...");
+    }
+  });
+}
+
+/**
 * Check if device is registered on Meccano IoT Gateway
 **/
 function checkRegistration(device, fn) {
   console.log("Checking registration of device " + device + "...");
   // Check if the device is registered on the gateway
-  if(process.env.CHECK_AUTH_TEST) {
+  if(process.env.TESTS_AUTH) {
     var chk = pool.query({
-        sql : 'select count(*) as registered from `Registration` where device = ? and registrationDate is not null',
+        sql : 'select count(*) as registered from `Registration` where device = ? and device_group is not null',
         values : [device]
      }, function (error, results, fields) {
+       console.log(results);
+       console.log("existe: " + isNaN(results));
        fn( (!error && results[0] && results[0].registered === 1 ) );
      });
   // Else skip the test
   } else {
-    console.log("CHECK_AUTH_TEST skipped.");
+    console.log("TESTS_AUTH skipped.");
     fn(true);
   }
 }
@@ -235,7 +257,7 @@ function announce(device) {
     // If announcement data does not exist, inserts to the table
     if(results[0].count === 0) {
       console.log("Device " + device + " does not exists. Creating entry in Announcement table");
-      var opq = pool.query('insert into `IOTDB`.`Announcement` set ?', announcement, function(errop, result) {
+      var opq = pool.query('insert into `Announcement` set ?', announcement, function(errop, result) {
         if(errop) {
           console.error('(INSERT) Error announcing device ' + device);
           console.error(errop);
@@ -244,7 +266,7 @@ function announce(device) {
     // Updates the timestamp
     } else {
       console.log("Device " + device + " already exists. Updating Announcement table");
-      var op = pool.query( { sql: 'update `IOTDB`.`Announcement` set `lastAnnouncementDate` = ? where `device` = ? ',
+      var op = pool.query( { sql: 'update `Announcement` set `lastAnnouncementDate` = ? where `device` = ? ',
                              values : [ (new Date()), device ]
                            }, function(errop, result) {
         if(errop) {
@@ -252,6 +274,17 @@ function announce(device) {
           console.error(errop);
         }
       });
+    }
+  });
+  // Inserts into Announcement_History
+  var history = {
+    'device': device,
+    'announcementDate' : (new Date())
+  };
+  pool.query('insert into `Announcement_History` set ?', history, function(errop, result) {
+    if(errop) {
+      console.error('(INSERT) Error saving history of device ' + device);
+      console.error(errop);
     }
   });
 }
