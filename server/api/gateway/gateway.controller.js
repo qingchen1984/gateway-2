@@ -276,15 +276,4 @@ function announce(device) {
       });
     }
   });
-  // Inserts into Announcement_History
-  var history = {
-    'device': device,
-    'announcementDate' : (new Date())
-  };
-  pool.query('insert into `Announcement_History` set ?', history, function(errop, result) {
-    if(errop) {
-      console.error('(INSERT) Error saving history of device ' + device);
-      console.error(errop);
-    }
-  });
 }
