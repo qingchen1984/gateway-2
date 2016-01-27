@@ -97,6 +97,10 @@ npm Install
 To start the app:
 
 ```
+# Set the environment variables
+# AWS_ACCESSKEYDI, AWS_SECRETACCESSKEY, MYSQL_HOST, MYSQL_PORT ...
+# or configure the ./config/config.yml file.
+# See the documentation below for more details.
 npm start
 ```
 
