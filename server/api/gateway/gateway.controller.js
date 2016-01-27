@@ -31,19 +31,13 @@ var pool = mysql.createPool(config.mysql);
 exports.save = function(req, res) {
   console.log("POST");
   var device = req.params.device;
+  announce(device);
   checkRegistration(device, function(registered) {
     if(registered) {
       var sensorData = req.body;
-      var lines = 0;
       console.log("Processing " + sensorData.length + " lines of data...");
       sensorData.forEach(function(object) {
         checkDeviceData(object);
-        // Announce the device when the first line is processed
-        if(lines === 0) {
-          announce(object.device);
-        } else {
-          lines++;
-        }
       })
       res.json({
         operation: 'POST',
@@ -65,11 +59,11 @@ exports.save = function(req, res) {
 exports.getMessages = function(req, res) {
   console.log("GET");
   var device = req.params.device;
+  announce(device);
   console.log("Checking if device is registered...");
   checkRegistration(device, function(registered) {
     if(registered) {
       console.log("Receiving data from device " + device);
-      announce(device);
       // Get the messages for the device
       getMessages(device, function(error, results) {
         console.log(results);
