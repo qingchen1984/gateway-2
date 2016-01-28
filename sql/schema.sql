@@ -42,14 +42,6 @@ CREATE TABLE Announcement (
   lastAnnouncementDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create table Announcement_History
-DROP TABLE Announcement_History;
-
-CREATE TABLE Announcement_History (
-  device VARCHAR(20) NOT NULL,
-  announcementDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Create table Registration
 DROP TABLE Registration;
 
@@ -73,3 +65,20 @@ CREATE TABLE Messages (
   readDate DATETIME,
   creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create the view DeviceStatus
+DROP VIEW DeviceStatus;
+
+CREATE OR REPLACE VIEW DeviceStatus AS
+	select  r.*,  a.lastAnnouncementDate as lastAnnouncementDate,
+				  timestampdiff(minute, a.lastAnnouncementDate, now()) as elapsedMinutes,
+				  if(r.device_group is null, 'WAITING_APPROVE',
+					 if(timestampdiff(minute, a.lastAnnouncementDate, now()) < 5, 'NORMAL',
+					   if(timestampdiff(minute, a.lastAnnouncementDate, now()) between 6 and 15, 'WARNING',
+						 if(timestampdiff(minute, a.lastAnnouncementDate, now()) > 15, 'FAIL', 'UNKNOWN'
+						 )
+					   )
+					 )
+				   ) as status
+	from `Registration` as r, `Announcement` as a
+	where r.device = a.device;

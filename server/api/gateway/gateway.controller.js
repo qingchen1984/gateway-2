@@ -31,19 +31,13 @@ var pool = mysql.createPool(config.mysql);
 exports.save = function(req, res) {
   console.log("POST");
   var device = req.params.device;
+  announce(device);
   checkRegistration(device, function(registered) {
     if(registered) {
       var sensorData = req.body;
-      var lines = 0;
       console.log("Processing " + sensorData.length + " lines of data...");
       sensorData.forEach(function(object) {
         checkDeviceData(object);
-        // Announce the device when the first line is processed
-        if(lines === 0) {
-          announce(object.device);
-        } else {
-          lines++;
-        }
       })
       res.json({
         operation: 'POST',
@@ -65,11 +59,11 @@ exports.save = function(req, res) {
 exports.getMessages = function(req, res) {
   console.log("GET");
   var device = req.params.device;
+  announce(device);
   console.log("Checking if device is registered...");
   checkRegistration(device, function(registered) {
     if(registered) {
       console.log("Receiving data from device " + device);
-      announce(device);
       // Get the messages for the device
       getMessages(device, function(error, results) {
         console.log(results);
@@ -255,7 +249,7 @@ function announce(device) {
                                values: [device]
                              }, function(error, results, fields) {
     // If announcement data does not exist, inserts to the table
-    if(results[0].count === 0) {
+    if(typeof results[0].count === 'undefined' || results[0].count === 0) {
       console.log("Device " + device + " does not exists. Creating entry in Announcement table");
       var opq = pool.query('insert into `Announcement` set ?', announcement, function(errop, result) {
         if(errop) {
@@ -274,17 +268,6 @@ function announce(device) {
           console.error(errop);
         }
       });
-    }
-  });
-  // Inserts into Announcement_History
-  var history = {
-    'device': device,
-    'announcementDate' : (new Date())
-  };
-  pool.query('insert into `Announcement_History` set ?', history, function(errop, result) {
-    if(errop) {
-      console.error('(INSERT) Error saving history of device ' + device);
-      console.error(errop);
     }
   });
 }
