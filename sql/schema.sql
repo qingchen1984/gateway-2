@@ -48,7 +48,7 @@ DROP TABLE Registration;
 CREATE TABLE Registration (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
   device_group VARCHAR(20),
-  memo VARCHAR(1024),
+  memo VARCHAR(1024) NULL,
   registrationDate DATETIME,
   creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -88,3 +88,19 @@ DROP TABLE DeviceHistoryStatus;
 
 CREATE TABLE DeviceHistoryStatus (status varchar(20) NOT NULL,
     numberOfDevices int NOT NULL, creationDate datetime default now() );
+
+
+-- Create the table User
+DROP TABLE `User`; 
+
+CREATE TABLE `ser` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `email` varchar(45) NOT NULL,
+  `role` varchar(45) DEFAULT 'user',
+  `hashedPassword` text NOT NULL,
+  `salt` text,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+
