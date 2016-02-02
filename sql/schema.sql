@@ -82,3 +82,9 @@ CREATE OR REPLACE VIEW DeviceStatus AS
 				   ) as status
 	from `Registration` as r, `Announcement` as a
 	where r.device = a.device;
+
+-- Create the table DeviceHistoryStatus
+DROP TABLE DeviceHistoryStatus;
+
+CREATE TABLE DeviceHistoryStatus (status varchar(20) NOT NULL,
+    numberOfDevices int NOT NULL, creationDate datetime default now() );
