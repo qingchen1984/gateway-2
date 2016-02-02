@@ -48,10 +48,9 @@ DROP TABLE Registration;
 CREATE TABLE Registration (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
   device_group VARCHAR(20),
-  memo VARCHAR(1024),
+  memo VARCHAR(1024) NULL,
   registrationDate DATETIME,
-  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  memo VARCHAR(200) NULL
+  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create the message table
@@ -83,3 +82,15 @@ CREATE OR REPLACE VIEW DeviceStatus AS
 				   ) as status
 	from `Registration` as r, `Announcement` as a
 	where r.device = a.device;
+    
+CREATE TABLE `User` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `email` varchar(45) NOT NULL,
+  `role` varchar(45) DEFAULT 'user',
+  `hashedPassword` text NOT NULL,
+  `salt` text,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+
