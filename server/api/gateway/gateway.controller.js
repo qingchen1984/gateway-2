@@ -249,7 +249,7 @@ function announce(device) {
                                values: [device]
                              }, function(error, results, fields) {
     // If announcement data does not exist, inserts to the table
-    if(results[0].count === 0) {
+    if(typeof results[0].count === 'undefined' || results[0].count === 0) {
       console.log("Device " + device + " does not exists. Creating entry in Announcement table");
       var opq = pool.query('insert into `Announcement` set ?', announcement, function(errop, result) {
         if(errop) {

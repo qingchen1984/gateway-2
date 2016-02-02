@@ -82,8 +82,18 @@ CREATE OR REPLACE VIEW DeviceStatus AS
 				   ) as status
 	from `Registration` as r, `Announcement` as a
 	where r.device = a.device;
-    
-CREATE TABLE `User` (
+
+-- Create the table DeviceHistoryStatus
+DROP TABLE DeviceHistoryStatus;
+
+CREATE TABLE DeviceHistoryStatus (status varchar(20) NOT NULL,
+    numberOfDevices int NOT NULL, creationDate datetime default now() );
+
+
+-- Create the table User
+DROP TABLE `User`; 
+
+CREATE TABLE `ser` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
