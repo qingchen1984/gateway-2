@@ -66,6 +66,16 @@ CREATE TABLE Messages (
   creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create view DeviceActivity
+DROP VIEW DeviceActivity;
+
+CREATE OR REPLACE VIEW DeviceActivity AS
+  SELECT   `device`, `hour`, count(*) as updates
+  FROM     `Facts`
+  WHERE    date(`creationDate`) = date(now())
+  GROUP BY `device`, `hour`
+  ORDER BY `hour` DESC;
+
 -- Create the view DeviceStatus
 DROP VIEW DeviceStatus;
 
