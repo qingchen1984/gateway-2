@@ -103,12 +103,12 @@ CREATE TABLE DeviceHistoryStatus (status varchar(20) NOT NULL,
 -- Create the table User
 DROP TABLE `User`; 
 
-CREATE TABLE `ser` (
+CREATE TABLE `User` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
   `role` varchar(45) DEFAULT 'user',
-  `hashedPassword` text NOT NULL,
+  `password` text NOT NULL,
   `salt` text,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `email` (`email`)
