@@ -80,18 +80,35 @@ CREATE OR REPLACE VIEW DeviceActivity AS
 DROP VIEW DeviceStatus;
 
 CREATE OR REPLACE VIEW DeviceStatus AS
-	select  r.*,  a.lastAnnouncementDate as lastAnnouncementDate,
-				  timestampdiff(minute, a.lastAnnouncementDate, now()) as elapsedMinutes,
-				  if(r.device_group is null, 'WAITING_APPROVE',
-					 if(timestampdiff(minute, a.lastAnnouncementDate, now()) < 5, 'NORMAL',
-					   if(timestampdiff(minute, a.lastAnnouncementDate, now()) between 6 and 15, 'WARNING',
-						 if(timestampdiff(minute, a.lastAnnouncementDate, now()) > 15, 'FAIL', 'UNKNOWN'
-						 )
-					   )
-					 )
-				   ) as status
-	from `Registration` as r, `Announcement` as a
-	where r.device = a.device;
+	SELECT 
+        `r`.`device` AS `device`,
+        `r`.`device_group` AS `device_group`,
+        `r`.`registrationDate` AS `registrationDate`,
+        `r`.`creationDate` AS `creationDate`,
+        `r`.`memo` AS `memo`,
+        `a`.`lastAnnouncementDate` AS `lastAnnouncementDate`,
+        TIMESTAMPDIFF(MINUTE,
+            `a`.`lastAnnouncementDate`,
+            NOW()) AS `elapsedMinutes`,
+        IF(ISNULL(`r`.`device_group`),
+            'WAITING_APPROVE',
+            IF((TIMESTAMPDIFF(MINUTE,
+                    `a`.`lastAnnouncementDate`,
+                    NOW()) < 5),
+                'NORMAL',
+                IF((TIMESTAMPDIFF(MINUTE,
+                        `a`.`lastAnnouncementDate`,
+                        NOW()) BETWEEN 6 AND 15),
+                    'WARNING',
+                    IF((TIMESTAMPDIFF(MINUTE,
+                            `a`.`lastAnnouncementDate`,
+                            NOW()) > 15),
+                        'FAIL',
+                        'UNKNOWN')))) AS `status`
+    FROM
+        `Registration` `r`
+        LEFT JOIN `Announcement` `a`
+        ON `r`.`device` = `a`.`device`;
 
 -- Create the table DeviceHistoryStatus
 DROP TABLE DeviceHistoryStatus;
