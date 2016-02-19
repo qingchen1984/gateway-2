@@ -31,7 +31,7 @@ CREATE TABLE DeviceStatistics (
     average FLOAT,
     deviation FLOAT,
     error FLOAT,
-    creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    creationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create table Announcement
@@ -39,7 +39,7 @@ DROP TABLE Announcement;
 
 CREATE TABLE Announcement (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
-  lastAnnouncementDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  lastAnnouncementDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create table Registration
@@ -49,8 +49,8 @@ CREATE TABLE Registration (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
   device_group VARCHAR(20),
   memo VARCHAR(1024) NULL,
-  registrationDate DATETIME,
-  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  registrationDate TIMESTAMP,
+  creationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create the message table
@@ -62,8 +62,8 @@ CREATE TABLE Messages (
   sender VARCHAR(20) NOT NULL,
   delivery_type VARCHAR(20) NOT NULL,
   message VARCHAR(1024) NOT NULL,
-  readDate DATETIME,
-  creationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  readDate TIMESTAMP,
+  creationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create view DeviceActivity
@@ -114,7 +114,7 @@ CREATE OR REPLACE VIEW DeviceStatus AS
 DROP TABLE DeviceHistoryStatus;
 
 CREATE TABLE DeviceHistoryStatus (status varchar(20) NOT NULL,
-    numberOfDevices int NOT NULL, creationDate datetime default now() );
+    numberOfDevices int NOT NULL, creationDate TIMESTAMP default now() );
 
 
 -- Create the table User
@@ -129,5 +129,5 @@ CREATE TABLE `User` (
   `salt` text,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=latin1;
+)
 
