@@ -19,108 +19,179 @@
 
 'use strict';
 
-var config = require('../../config');
-var mysql = require('mysql');
-var util = require('util');
+var config = require('../../config/environment');
 
-var pool = mysql.createPool(config.mysql);
+var _ = require('lodash');
+var util = require('../../components/util');
+var db = require('../../sqldb');
 
-/*
-* Record data to the database
-*/
-exports.save = function(req, res) {
-  console.log("POST");
-  var device = req.params.device;
-  announce(device);
-  checkRegistration(device, function(registered) {
-    if(registered) {
-      var sensorData = req.body;
-      console.log("Processing " + sensorData.length + " lines of data...");
-      sensorData.forEach(function(object) {
-        checkDeviceData(object);
-      })
-      res.json({
-        operation: 'POST',
-        status: 'OK'
-      });
-    } else {
-      saveRegistration(device);
-      res.status(403).json({
-        operation: 'POST',
-        status: 'NON_AUTHORIZED'
-      });
-    }
-  });
-};
+var Announcement = db.Announcement;
+
+var Registration = db.Registration;
+
+var Message = db.Message;
+
+var DeviceStatistics = db.DeviceStatistics;
+var Fact = db.Fact;
+
+var P = require('bluebird');
 
 /*
-* Get time function
-*/
-exports.getMessages = function(req, res) {
-  console.log("GET");
+ * Record data to the database
+ */
+exports.create = function(req, res) {
   var device = req.params.device;
-  announce(device);
-  console.log("Checking if device is registered...");
-  checkRegistration(device, function(registered) {
-    if(registered) {
-      console.log("Receiving data from device " + device);
-      // Get the messages for the device
-      getMessages(device, function(error, results) {
-        console.log(results);
-        // The first message is aways the timestamp
-        var messages = Date.now() + '\r\n';
-        // Process other messages
-        for(var m = 0; m<results.length; m++) {
-          messages += results[m].message + '\r\n';
-        }
-        res.send(messages);
-        res.end();
-        clearMessages(results);
-      })
-    } else {
-      saveRegistration(device);
-      res.status(403).json({
-        operation: 'GET',
-        status: 'NON_AUTHORIZED'
-      });
-    }
-  });
+  return announce(device)
+    .then(checkRegistration(device))
+    .then(registered => {
+      if (registered) {
+        return P.each(req.body, function(object) {
+          return checkDeviceData(object);
+        }).then(() => {
+          res.status(200).send();
+        });
+      } else {
+        return saveRegistration(device).then(() => {
+          res.status(403).json('NON_AUTHORIZED');
+        });
+      }
+    })
+    .catch(function(err) {
+      console.trace(err);
+      res.status(500).send(err);
+    });
 };
 
-/**
-* Get Messages for device
-*/
-function getMessages(device, fn) {
-  console.log("Getting messages for device " + device + "...");
-  var chk = pool.query({
-    sql : 'select ID, message from `Messages` where `device` = ? and ( `delivery_type` = "TRANSIENT" and  readDate is null ) or (`delivery_type` = "PERSISTENT")',
-    values : [device]
- }, function (error, results, fields) {
-   fn(error, results);
- });
+exports.ack = function(req, res) {
+  console.log("(Acknowledging) registration information...");
+  var device = req.params.device;
+  Registration.findOne({
+    where: {
+      device: device
+    }
+  }).then(function(registration) {
+    if (registration) {
+      return registration.updateAttributes({
+        registrationDate: new Date()
+      }).then(function(updated) {
+        res.format({
+          text: function() {
+            res.status(200).send(registration.dataValues.device_group);
+          },
+          json: function() {
+            res.status(200).send(updated);
+          },
+          default: function() {
+            res.status(406).send('Not Acceptable');
+          }
+        });
+      });
+    } else {
+      return saveRegistration(device).then(() => {
+        res.status(403).json('NON_AUTHORIZED');
+      });
+    }
+  }).catch(function(err) {
+    console.trace('(Acknowledging) Error:', err);
+    res.status(500).send('INTERNAL_ERROR');
+  });
 }
 
-/**
-* Clears the received messages
-*/
-function clearMessages(messages) {
-  console.log("Clearing received messages...");
-  for(var m = 0; m<messages.length; m++) {
-    console.log("Clearing message ID " + messages[m].ID + "...");
-    pool.query('update `Messages` set readDate = NOW() where ID = ?', messages[m].ID);
+/*
+ * Get time function
+ */
+exports.show = function(req, res) {
+  var device = req.params.device;
+  return announce(device)
+    .then(checkRegistration(device))
+    .then(registered => {
+      if (registered) {
+        return getMessages(device)
+          .then(respondShow(res))
+          .then(clearMessages);
+      } else {
+        return saveRegistration(device).then(() => {
+          res.status(403).json('NON_AUTHORIZED');
+        });
+      }
+    })
+    .catch(function(err) {
+      console.trace(err);
+      res.status(500).send(err);
+    });
+};
+
+function respondShow(res) {
+  return function(messages) {
+    res.format({
+      text: function() {
+        var body = Date.now() + '\r\n';
+
+        _.forEach(messages, (message) => {
+          body += message.message + '\r\n';
+        });
+        res.status(200).send(body);
+      },
+      json: function() {
+        res.status(200).send({
+          dateTime: Date.now(),
+          messages: messages
+        });
+      },
+      default: function() {
+        res.status(406).send('Not Acceptable');
+      }
+    });
+    return messages;
   }
+
+}
+
+/**
+ * Get Messages for device
+ */
+function getMessages(device) {
+  console.log("Getting messages for device " + device + "...");
+
+  return Message.findAll({
+    where: {
+      device: device,
+      $or: [{
+        delivery_type: 'TRANSIENT',
+        readDate: null
+      }, {
+        delivery_type: 'PERSISTENT'
+      }]
+    }
+  });
+
+
+}
+
+/**
+ * Clears the received messages
+ */
+function clearMessages(messages) {
+  var ids = _.map(messages, 'ID');
+  return Message.update({
+    readDate: new Date()
+  }, {
+    where: {
+      ID: ids
+    }
+  });
 }
 
 /*
-* Pre insert tests
-*/
+ * Pre insert tests
+ */
 function checkDeviceData(fact) {
   console.log("Checking data consistency...");
   // Discard data if it's zero (0)
-  if(process.env.TESTS_ZERO) {
+  if (config.tests.zero) {
     console.log("Applying CHECK_ZERO_TEST...");
-    if(fact.data === 0) {
-      console.warn("TESTS_ZERO failed: group=%d device=%d sensor=%d data=%d", fact.group,fact.device,fact.sensor,fact.data);
+    if (fact.data === 0) {
+      console.warn("TESTS_ZERO failed: group=%s device=%s sensor=%d data=%d", fact.device_group, fact.device, fact.sensor, fact.data);
       return;
     } else {
       console.log("TESTS_ZERO passed.");
@@ -130,40 +201,42 @@ function checkDeviceData(fact) {
   }
 
   // Discard data if it's beyound the number of configured sigmas (configuration in config.yml)
-  if(process.env.CHECK_STATISTIC_TEST) {
+  if (config.tests.statistic) {
     console.log("Applying CHECK_STATISTIC_TEST...");
-    pool.query('select average, deviation from DeviceStatistics where device = ? and sensor = ?', [fact.device, fact.sensor],
-      function(err, rows, fields) {
-        if(err) console.error(err);
-        if (rows && rows.length) {
-          var deviation = rows[0].deviation;
-          // If fact.data deviates the number of sigmas, the data will be ignored
-          if (fact.data > (config.statistics.sigmas * deviation)) {
-            console.warn('Noise ignored: group=%d device=%d sensor=%d data=%d sigmas=%d deviation=%d', fact.group,fact.device,fact.sensor,fact.data,config.statistics.sigmas,deviation);
-            return;
-          } else {
-              console.log("TESTS_STATISTIC passed.");
-              saveFact(fact);
-          }
+    return DeviceStatistics.findOne({
+      where: {
+        device: fact.device,
+        sensor: fact.sensor
+      }
+    }).then(deviceStatistics => {
+      if (deviceStatistics) {
+        var deviation = deviceStatistics.deviation;
+        // If fact.data deviates the number of sigmas, the data will be ignored
+        if (fact.data > (config.statistics.sigmas * deviation)) {
+          console.warn('Noise ignored: group=%s device=%s sensor=%d data=%d sigmas=%d deviation=%d', fact.group, fact.device, fact.sensor, fact.data, config.statistics.sigmas, deviation);
+          return;
         } else {
-          console.log('Device Statistics not found: group=%d device=%d sensor=%d',fact.group,fact.device,fact.sensor);
-          console.log("TESTS_STATISTIC skipped.");
-          saveFact(fact);
+          console.log("TESTS_STATISTIC passed.");
         }
-      });
+      } else {
+        console.log('Device Statistics not found: group=%s device=%s sensor=%d', fact.device_group, fact.device, fact.sensor);
+        console.log("TESTS_STATISTIC skipped.");
+      }
+      return fact;
+    }).then(saveFact);
   } else {
     console.log("TESTS_STATISTIC skipped.");
-    saveFact(fact);
+    return saveFact(fact);
   }
 }
 
 /**
-* Prepare data for insert
-*/
-function prepareData(fact){
+ * Prepare data for insert
+ */
+function prepareData(fact) {
   var milis = fact.start + fact.delta;
   var dateTime = new Date(milis);
-  return  {
+  return {
     'year': dateTime.getFullYear(),
     'month': dateTime.getMonth() + 1,
     'day': dateTime.getDate(),
@@ -181,93 +254,71 @@ function prepareData(fact){
 }
 
 /**
-* Saves the fact to the database
-*/
+ * Saves the fact to the database
+ */
 function saveFact(fact) {
-  console.log("Persisting fact to the database...");
-  var op = pool.query('insert into Facts set ?', prepareData(fact), function(errop, result) {
-    if (errop) {
-      console.error('Erro on save fact:',errop);
-    } else {
-      console.log("Data successfuly persisted to database...");
-    }
-  });
-}
-
-/**
-* Saves the object to the database
-*/
-function saveRegistration(device) {
-  console.log("Persisting registration information to the database...");
-  var object = {
-      "device": device
-  };
-  var op = pool.query('insert into Registration set ?', object, function(error, result) {
-    if (error) {
-      console.error('Error persisting object:', error);
-    } else {
-      console.log("Data successfuly persisted to database...");
-    }
-  });
-}
-
-/**
-* Check if device is registered on Meccano IoT Gateway
-**/
-function checkRegistration(device, fn) {
-  console.log("Checking registration of device " + device + "...");
-  // Check if the device is registered on the gateway
-  if(process.env.TESTS_AUTH) {
-    var chk = pool.query({
-        sql : 'select count(*) as registered from `Registration` where device = ? and device_group is not null',
-        values : [device]
-     }, function (error, results, fields) {
-       console.log(results);
-       console.log("existe: " + isNaN(results));
-       fn( (!error && results[0] && results[0].registered === 1 ) );
-     });
-  // Else skip the test
-  } else {
-    console.log("TESTS_AUTH skipped.");
-    fn(true);
+  if (fact) {
+    console.log("Persisting fact to the database...");
+    return Fact.create(prepareData(fact));
   }
 }
 
 /**
-* This method announces the device to the Meccano Gateway
-* This is used for monitoring purposes
-*/
-function announce(device) {
-  console.log("Announcing device " + device + " to the gateway...");
-  // Create the announcement object
-  var announcement = {
-    'device' : device,
-    'lastAnnouncementDate' : (new Date())
+ * Saves the object to the database
+ */
+function saveRegistration(device) {
+  console.log("Persisting registration information to the database...");
+  var object = {
+    'device': device
   };
-  // Check if there is previous announcement data on the database
-  var previous = pool.query( { sql: 'select count(*) as count from `Announcement` where `device` = ?',
-                               values: [device]
-                             }, function(error, results, fields) {
-    // If announcement data does not exist, inserts to the table
-    if(typeof results[0].count === 'undefined' || results[0].count === 0) {
-      console.log("Device " + device + " does not exists. Creating entry in Announcement table");
-      var opq = pool.query('insert into `Announcement` set ?', announcement, function(errop, result) {
-        if(errop) {
-          console.error('(INSERT) Error announcing device ' + device);
-          console.error(errop);
+  return Registration.create(object);
+}
+
+/**
+ * Check if device is registered on Meccano IoT Gateway
+ **/
+function checkRegistration(device) {
+  return function() {
+    console.log("Checking registration of device " + device + "...");
+    // Check if the device is registered on the gateway
+    if (config.tests.auth) {
+      return Registration.count({
+        where: {
+          device: device,
+          device_group: {
+            $not: null
+          }
         }
+      }).then(count => {
+        return (count > 0);
       });
-    // Updates the timestamp
+      // Else skip the test
     } else {
-      console.log("Device " + device + " already exists. Updating Announcement table");
-      var op = pool.query( { sql: 'update `Announcement` set `lastAnnouncementDate` = ? where `device` = ? ',
-                             values : [ (new Date()), device ]
-                           }, function(errop, result) {
-        if(errop) {
-          console.error('(UPDATE) Error announcing device ' + device);
-          console.error(errop);
-        }
+      console.log("TESTS_AUTH skipped.");
+      return true;
+    }
+  };
+}
+
+/**
+ * This method announces the device to the Meccano Gateway
+ * This is used for monitoring purposes
+ */
+function announce(device) {
+  console.log("(Announcement) Announcing device " + device + " to the gateway...");
+  return Announcement.findById(device).then(function(announcement) {
+    if (announcement) {
+      console.log("(Announcement) Device " + device + " already exists. Updating Announcement table");
+      return announcement.updateAttributes({
+        lastAnnouncementDate: new Date()
+      });
+    } else {
+      console.log("(Announcement) Device " + device + " does not exists. Creating entry in Announcement table");
+      return Announcement.create({
+        'device': device
       });
     }
+  }).catch(function(err) {
+    console.error('(Announcement) Error announcing device ' + device, err);
   });
 }

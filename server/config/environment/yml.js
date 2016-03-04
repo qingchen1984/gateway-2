@@ -16,17 +16,21 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-
 'use strict';
+var fs = require('fs');
+var yamlConfig = require('node-yaml-config');
 
-var express = require('express');
-var controller = require('./gateway.controller');
-
-var router = express.Router();
-
-// Routes for Root
-router.get('/:device', controller.show);
-router.post('/:device', controller.create);
-router.put('/:device', controller.ack);
-
-module.exports = router;
+module.exports = function() {
+  try {
+    fs.accessSync(process.env.CONFIG_FILE, fs.F_OK | fs.R_OK);
+  } catch (ex) {
+    console.log('Config file is not pressent or inaccessible! Check the path file %s', process.env.CONFIG_FILE);
+    return {};
+  }
+  try {
+    return yamlConfig.load(process.env.CONFIG_FILE, process.env.NODE_ENV);
+  } catch (ex) {
+    console.error(ex);
+    return {};
+  }
+}

@@ -19,22 +19,35 @@
 
 'use strict';
 
-var express = require('express');
+var config = require('./config/environment');
 
-// Set the environment, location of the config file and load configuration
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-process.env.CONFIG_FILE = process.env.CONFIG_FILE ||  './config/config.yml';
-var config  = require('./config');
+
+var sqldb = require('./sqldb');
+if (config.seedDB) {
+  require('./config/seed')();
+}
+
+var express = require('express');
 
 // Setup server
 var app = express();
 var server = require('http').createServer(app);
-require('./express')(app);
+
+require('./config/express')(app);
 require('./routes')(app);
 
 // Start server
-var PORT = process.env.PORT || config.port;
-var HOSTNAME = process.env.HOSTNAME || config.hostname;
-server.listen(PORT, HOSTNAME, function () {
-  console.log('Meccano IoT Gateway listening on %d, in %s mode', config.port, app.get('env'));
-});
+function startServer() {
+  server.listen(config.port, config.address, function() {
+    console.log('Meccano IoT Gateway listening on %d, in %s mode', config.port, app.get('env'));
+  });
+}
+
+sqldb.sequelize.sync()
+  .then(startServer)
+  .catch(function(err) {
+    console.log('Server failed to start due to error: %s', err);
+  });
+
+// Expose app
+exports = module.exports = app;
