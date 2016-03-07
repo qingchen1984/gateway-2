@@ -17,6 +17,11 @@ var routerStub = {
 };
 
 
+var authServiceStub = {
+  isAuthorized:'authService.isAuthorized'
+};
+
+
 // require the index with our stubbed out modules
 var gatewayIndex = proxyquire('./index', {
   'express': {
@@ -24,7 +29,8 @@ var gatewayIndex = proxyquire('./index', {
       return routerStub;
     }
   },
-  './gateway.controller': gatewayCtrlStub
+  './gateway.controller': gatewayCtrlStub,
+  './auth.service': authServiceStub
 });
 
 describe('Gateway API Router:', function() {
@@ -38,7 +44,7 @@ describe('Gateway API Router:', function() {
 
     it('should route to gateway.controller.show', function() {
       routerStub.get
-        .withArgs('/:device', 'gatewayCtrl.show')
+        .withArgs('/:device', 'authService.isAuthorized','gatewayCtrl.show')
         .should.have.been.calledOnce;
     });
   });
@@ -47,7 +53,7 @@ describe('Gateway API Router:', function() {
 
     it('should route to gateway.controller.create', function() {
       routerStub.post
-        .withArgs('/:device', 'gatewayCtrl.create')
+        .withArgs('/:device','authService.isAuthorized', 'gatewayCtrl.create')
         .should.have.been.calledOnce;
     });
   });
@@ -56,7 +62,7 @@ describe('Gateway API Router:', function() {
 
     it('should route to gateway.controller.ack', function() {
       routerStub.put
-        .withArgs('/:device', 'gatewayCtrl.ack')
+        .withArgs('/:device','authService.isAuthorized', 'gatewayCtrl.ack')
         .should.have.been.calledOnce;
     });
   });

@@ -42,23 +42,16 @@ var P = require('bluebird');
 exports.create = function(req, res) {
   var device = req.params.device;
   return announce(device)
-    .then(checkRegistration(device))
-    .then(registered => {
-      if (registered) {
-        return P.each(req.body, function(object) {
-          return checkDeviceData(object);
-        }).then(() => {
-          res.status(200).send();
-        });
-      } else {
-        return saveRegistration(device).then(() => {
-          res.status(403).json('NON_AUTHORIZED');
-        });
-      }
+    .then(() => {
+      return P.each(req.body, function(object) {
+        return checkDeviceData(object);
+      }).then(() => {
+        res.status(200).send();
+      });
     })
     .catch(function(err) {
       console.trace(err);
-      res.status(500).send(err);
+      res.status(500).send();
     });
 };
 
@@ -70,27 +63,21 @@ exports.ack = function(req, res) {
       device: device
     }
   }).then(function(registration) {
-    if (registration) {
-      return registration.updateAttributes({
-        registrationDate: new Date()
-      }).then(function(updated) {
-        res.format({
-          text: function() {
-            res.status(200).send(registration.dataValues.device_group);
-          },
-          json: function() {
-            res.status(200).send(updated);
-          },
-          default: function() {
-            res.status(406).send('Not Acceptable');
-          }
-        });
+    return registration.updateAttributes({
+      registrationDate: new Date()
+    }).then(function(updated) {
+      res.format({
+        text: function() {
+          res.status(200).send(registration.dataValues.device_group);
+        },
+        json: function() {
+          res.status(200).send(updated);
+        },
+        default: function() {
+          res.status(406).send('Not Acceptable');
+        }
       });
-    } else {
-      return saveRegistration(device).then(() => {
-        res.status(403).json('NON_AUTHORIZED');
-      });
-    }
+    });
   }).catch(function(err) {
     console.trace('(Acknowledging) Error:', err);
     res.status(500).send('INTERNAL_ERROR');
@@ -103,21 +90,14 @@ exports.ack = function(req, res) {
 exports.show = function(req, res) {
   var device = req.params.device;
   return announce(device)
-    .then(checkRegistration(device))
-    .then(registered => {
-      if (registered) {
-        return getMessages(device)
-          .then(respondShow(res))
-          .then(clearMessages);
-      } else {
-        return saveRegistration(device).then(() => {
-          res.status(403).json('NON_AUTHORIZED');
-        });
-      }
+    .then(() => {
+      return getMessages(device)
+        .then(respondShow(res))
+        .then(clearMessages);
     })
     .catch(function(err) {
       console.trace(err);
-      res.status(500).send(err);
+      res.status(500).send();
     });
 };
 
@@ -126,7 +106,6 @@ function respondShow(res) {
     res.format({
       text: function() {
         var body = Date.now() + '\r\n';
-
         _.forEach(messages, (message) => {
           body += message.message + '\r\n';
         });
@@ -152,7 +131,6 @@ function respondShow(res) {
  */
 function getMessages(device) {
   console.log("Getting messages for device " + device + "...");
-
   return Message.findAll({
     where: {
       device: device,
@@ -263,42 +241,6 @@ function saveFact(fact) {
   }
 }
 
-/**
- * Saves the object to the database
- */
-function saveRegistration(device) {
-  console.log("Persisting registration information to the database...");
-  var object = {
-    'device': device
-  };
-  return Registration.create(object);
-}
-
-/**
- * Check if device is registered on Meccano IoT Gateway
- **/
-function checkRegistration(device) {
-  return function() {
-    console.log("Checking registration of device " + device + "...");
-    // Check if the device is registered on the gateway
-    if (config.tests.auth) {
-      return Registration.count({
-        where: {
-          device: device,
-          device_group: {
-            $not: null
-          }
-        }
-      }).then(count => {
-        return (count > 0);
-      });
-      // Else skip the test
-    } else {
-      console.log("TESTS_AUTH skipped.");
-      return true;
-    }
-  };
-}
 
 /**
  * This method announces the device to the Meccano Gateway

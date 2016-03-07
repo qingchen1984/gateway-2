@@ -17,8 +17,8 @@ describe('Message API:', function() {
 
     before(function() {
       return Registration.create({
-        device: 'FF:FF:FF:FF:FF:FF',
-        device_group: 666,
+        device: '66:66:66:66:66:66',
+        device_group: '666',
         registrationDate: null
       });
     });
@@ -30,7 +30,7 @@ describe('Message API:', function() {
 
     beforeEach(function(done) {
       request(app)
-        .put('/api/gateway/FF:FF:FF:FF:FF:FF')
+        .put('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'text/plain')
         .expect(200)
         .expect('Content-Type', /plain/)
@@ -55,7 +55,7 @@ describe('Message API:', function() {
 
     before(function() {
       return Registration.create({
-        device: 'FF:FF:FF:FF:FF:FF',
+        device: '66:66:66:66:66:66',
         device_group: 666,
         registrationDate: null
       });
@@ -68,7 +68,7 @@ describe('Message API:', function() {
 
     beforeEach(function(done) {
       request(app)
-        .put('/api/gateway/FF:FF:FF:FF:FF:FF')
+        .put('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /json/)
@@ -114,7 +114,7 @@ describe('Message API:', function() {
 
   describe('GET /api/gateway/:device', function() {
     var message = {
-      device: 'FF:FF:FF:FF:FF:FF',
+      device: '66:66:66:66:66:66',
       sender: 'TESTE',
       delivery_type: 'PERSISTENT',
       message: 'REBOOT'
@@ -129,7 +129,7 @@ describe('Message API:', function() {
 
     before(function() {
       return Registration.bulkCreate([{
-        device: 'FF:FF:FF:FF:FF:FF',
+        device: '66:66:66:66:66:66',
         device_group: 666,
         registrationDate: new Date()
       }]);
@@ -142,12 +142,12 @@ describe('Message API:', function() {
     });
 
     after(function() {
-      return Announcement.count().should.eventually.be.least(2, 'should have at least 2 Announcement');
+      return Announcement.count().should.eventually.be.least(1, 'should have at least 1 Announcement');
     });
 
     before(function() {
       return Message.bulkCreate([message, {
-        device: 'FF:FF:FF:FF:FF:FF',
+        device: '66:66:66:66:66:66',
         sender: 'TESTE',
         delivery_type: 'TRANSIENT',
         message: 'REBOOT'
@@ -168,7 +168,7 @@ describe('Message API:', function() {
 
     it('should respond with messages text format', function(done) {
       request(app)
-        .get('/api/gateway/FF:FF:FF:FF:FF:FF')
+        .get('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'text/plain')
         .expect(200)
         .expect('Content-Type', /text/)
@@ -185,7 +185,7 @@ describe('Message API:', function() {
     });
     it('should respond with messages json format', function(done) {
       request(app)
-        .get('/api/gateway/FF:FF:FF:FF:FF:FF')
+        .get('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'application/json')
         .expect(200)
         .expect('Content-Type', /json/)
@@ -245,7 +245,7 @@ describe('Message API:', function() {
   describe('POST /api/gateway/:device', function() {
     before(function() {
       return Registration.bulkCreate([{
-        device: 'FF:FF:FF:FF:FF:FF',
+        device: '66:66:66:66:66:66',
         device_group: 666,
         registrationDate: null
       },
@@ -283,14 +283,14 @@ describe('Message API:', function() {
 
     it('Send facts', function(done) {
       request(app)
-        .post('/api/gateway/FF:FF:FF:FF:FF:FF')
+        .post('/api/gateway/66:66:66:66:66:66')
         .send(
           [{
             'channel': 'test',
             'start': Date.now(),
             'delta': 0,
             'device_group': '666',
-            'device': 'FF:FF:FF:FF:FF:FF',
+            'device': '66:66:66:66:66:66',
             'sensor': 1,
             'data': 1
           }, {
@@ -298,7 +298,7 @@ describe('Message API:', function() {
             'start': Date.now(),
             'delta': 0,
             'device_group': '666',
-            'device': 'FF:FF:FF:FF:FF:FF',
+            'device': '66:66:66:66:66:66',
             'sensor': 2,
             'data': 1
           },
@@ -324,7 +324,7 @@ describe('Message API:', function() {
     it('should have save facts', function() {
       return Fact.findAll({
         where: {
-          device: 'FF:FF:FF:FF:FF:FF',
+          device: '66:66:66:66:66:66',
           device_group: '666',
           sensor: [1,2]
         }

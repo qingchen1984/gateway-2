@@ -21,12 +21,13 @@
 
 var express = require('express');
 var controller = require('./gateway.controller');
+var auth = require('./auth.service');
 
 var router = express.Router();
 
 // Routes for Root
-router.get('/:device', controller.show);
-router.post('/:device', controller.create);
-router.put('/:device', controller.ack);
+router.get('/:device', auth.isAuthorized, controller.show);
+router.post('/:device',auth.isAuthorized, controller.create);
+router.put('/:device',auth.isAuthorized, controller.ack);
 
 module.exports = router;

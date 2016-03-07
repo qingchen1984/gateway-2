@@ -12,12 +12,24 @@ module.exports = function(grunt) {
     },
     jshint: {
       options: {
+        jshintrc: 'server/.jshintrc'
+      },
+      server: {
+        options: {
           jshintrc: 'server/.jshintrc'
         },
         src: [
           'server/**/*.js',
-          '!server/**/*.spec.js'
+          '!server/**/*.spec.js',
+          '!server/**/*.integration.js'
         ]
+      },
+      serverTest: {
+        options: {
+          jshintrc: 'server/.jshintrc-spec'
+        },
+        src: ['server/**/*.spec.js', 'server/**/*.integration.js']
+      },
     },
     watch: {
       files: ['<%= jshint.files %>'],
@@ -29,7 +41,9 @@ module.exports = function(grunt) {
       options: {
         reporter: 'spec',
         require: 'mocha.conf.js',
-        timeout: 5000 // set default mocha spec timeout
+        timeout: 5000,
+        quiet: false,
+        clearRequireCache: false
       },
       unit: {
         src: ['server/**/*.spec.js']
@@ -47,6 +61,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-env');
 
   grunt.registerTask('default', ['jshint', 'mochaTest']);
-  grunt.registerTask('test', ['env:test', 'mochaTest']);
+  grunt.registerTask('test', ['env:test', 'jshint', 'mochaTest']);
 
 };

@@ -1,7 +1,7 @@
 {
   "node": true,
   "esnext": true,
-  "bitwise": true,
+  "bitwise": false,
   "eqeqeq": true,
   "immed": true,
   "latedef": "nofunc",
@@ -11,5 +11,6 @@
   "undef": true,
   "smarttabs": true,
   "asi": true,
-  "debug": true
+  "debug": true,
+  "expr":true
 }
