@@ -68,7 +68,7 @@ exports.ack = function(req, res) {
     }).then(function(updated) {
       res.format({
         text: function() {
-          res.status(200).send(registration.dataValues.device_group);
+          res.status(200).send(registration.dataValues.device_group + '\r\n' + '%22eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJRCI6NTUsImlhdCI6MTQ1NzM4MzI3NCwiZXhwIjoxNDU3Mzg1MDc0fQ.qUUUtwv9KApOWI8XLjBD-GNS6xa7ZmCxYYAqQhrlFuw%22' );
         },
         json: function() {
           res.status(200).send(updated);
