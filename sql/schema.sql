@@ -4,7 +4,7 @@ CREATE SCHEMA IOTDB ;
 use IOTDB;
 
 -- Create table facts
-DROP TABLE Facts;
+DROP TABLE IF EXISTS  Facts;
 
 CREATE TABLE Facts (
     channel VARCHAR(50) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE Facts (
 );
 
 -- Create table Device Statistics
-DROP TABLE DeviceStatistics;
+DROP TABLE IF EXISTS  DeviceStatistics;
 
 CREATE TABLE DeviceStatistics (
     device VARCHAR(20),
@@ -35,7 +35,7 @@ CREATE TABLE DeviceStatistics (
 );
 
 -- Create table Announcement
-DROP TABLE Announcement;
+DROP TABLE IF EXISTS  Announcement;
 
 CREATE TABLE Announcement (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
@@ -43,7 +43,7 @@ CREATE TABLE Announcement (
 );
 
 -- Create table Registration
-DROP TABLE Registration;
+DROP TABLE IF EXISTS  Registration;
 
 CREATE TABLE Registration (
   device VARCHAR(20) NOT NULL PRIMARY KEY,
@@ -54,7 +54,7 @@ CREATE TABLE Registration (
 );
 
 -- Create the message table
-DROP TABLE Messages;
+DROP TABLE IF EXISTS  Messages;
 
 CREATE TABLE Messages (
   ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -67,7 +67,7 @@ CREATE TABLE Messages (
 );
 
 -- Create view DeviceActivity
-DROP VIEW DeviceActivity;
+DROP VIEW IF EXISTS DeviceActivity;
 
 CREATE OR REPLACE VIEW DeviceActivity AS
   SELECT   `device`, `hour`, count(*) as updates
@@ -77,10 +77,10 @@ CREATE OR REPLACE VIEW DeviceActivity AS
   ORDER BY `hour` DESC;
 
 -- Create the view DeviceStatus
-DROP VIEW DeviceStatus;
+DROP VIEW IF EXISTS DeviceStatus;
 
 CREATE OR REPLACE VIEW DeviceStatus AS
-	SELECT 
+	SELECT
         `r`.`device` AS `device`,
         `r`.`device_group` AS `device_group`,
         `r`.`registrationDate` AS `registrationDate`,
@@ -111,14 +111,14 @@ CREATE OR REPLACE VIEW DeviceStatus AS
         ON `r`.`device` = `a`.`device`;
 
 -- Create the table DeviceHistoryStatus
-DROP TABLE DeviceHistoryStatus;
+DROP TABLE IF EXISTS  DeviceHistoryStatus;
 
 CREATE TABLE DeviceHistoryStatus (status varchar(20) NOT NULL,
     numberOfDevices int NOT NULL, creationDate TIMESTAMP default now() );
 
 
 -- Create the table User
-DROP TABLE `User`; 
+DROP TABLE IF EXISTS  `User`;
 
 CREATE TABLE `User` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -130,4 +130,3 @@ CREATE TABLE `User` (
   PRIMARY KEY (`ID`),
   UNIQUE KEY `email` (`email`)
 )
-
