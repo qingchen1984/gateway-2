@@ -222,4 +222,4 @@ The registration process works the following way:
 Meccano IoT Gateway offers an API catalog for Registration and Messaging. In future releases there will be several others.
 You may download the Postman test collection here:
 
-[![Run in Postman](https://run.pstmn.io/button.png)](https://www.getpostman.com/run-collection/d5056428376f9ec700fc)
+[![Run in Postman](https://run.pstmn.io/button.png)](https://www.getpostman.com/run-collection/898cbb6308a49edac4af)
