@@ -45,7 +45,7 @@ describe('Message API:', function() {
 
     it('should respond with device group', function() {
       messages.should.be.text;
-      messages.should.be.equals('666');
+      messages.should.match(/666\r\n(.*)/);
     });
   });
 
@@ -83,7 +83,7 @@ describe('Message API:', function() {
 
     it('should respond with device group', function() {
       messages.should.be.instanceOf(Object);
-      messages.device_group.should.be.equals('666');
+      messages.device_group.should.match(/666\r\n(.*)/);
     });
   });
 
