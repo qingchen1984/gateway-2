@@ -28,13 +28,19 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 var all = {
   env: process.env.NODE_ENV,
-
   tests: {
     auth: true,
     statistic: true,
     zero: true
   },
-  statistics:{sigmas:6},
+
+  secrets: {
+    session: 'meccano-gateway-secret',
+    sessionTime: null
+  },
+  statistics: {
+    sigmas: 6
+  },
   showConfig: true,
   // Root path of server
   root: path.normalize(__dirname + '/../../..'),
@@ -72,20 +78,25 @@ if (config.showConfig) {
   console.log();
 }
 
+if(config.secrets.session === 'meccano-gateway-secret' && config.env === 'production'){
+  console.error('Security Error!! On production you should set the SECRETS_SESSION ENV.')
+  process.exit(1);
+}
+
 function show(object, parent) {
   _.forIn(object, function(value, key) {
-      var completeKey;
-      if (parent) {
-        completeKey = parent + '_' + key;
-      } else {
-        completeKey = key;
-      }
-      if (util.isArray(value)) {
-        console.log(completeKey.toUpperCase(), value);
-      } else if (util.isObject(value)) {
-        show(value, completeKey);
-      } else {
-        if (util.isNullOrUndefined(value)) {
+    var completeKey;
+    if (parent) {
+      completeKey = parent + '_' + key;
+    } else {
+      completeKey = key;
+    }
+    if (util.isArray(value)) {
+      console.log(completeKey.toUpperCase(), value);
+    } else if (util.isObject(value)) {
+      show(value, completeKey);
+    } else {
+      if (util.isNullOrUndefined(value)) {
         delete object[key];
       } else {
         console.log('%s: %s', completeKey.toUpperCase(), value);
@@ -94,14 +105,14 @@ function show(object, parent) {
   });
 }
 
-if((config.mysql.uri && (config.mysql.database || config.mysql.username || config.mysql.password || config.mysql.options.host || config.mysql.options.port))){
+if ((config.mysql.uri && (config.mysql.database || config.mysql.username || config.mysql.password || config.mysql.options.host || config.mysql.options.port))) {
   console.error('CONFIG ERROR!!\n\tYou should only specify MYSQL_URI and MYSQL_[DATABASE,USERNAME,PASSWORD,HOST,PORT]');
   process.exit(1);
 }
 
-if(config.mysql.options.logging === true){
+if (config.mysql.options.logging === true) {
   config.mysql.options.logging = console.log;
-}else{
+} else {
   config.mysql.options.logging = false
 }
 

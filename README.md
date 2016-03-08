@@ -121,6 +121,10 @@ For each yaml configuration parameter there is a corresponding environment varia
 
 - **NODE_ENV**: name of the environment. You may set this variable according to the name of your environment, for example prod, dev, test.
 
+- **SECRETS_SESSION**: The JWT secret.
+
+- **SECRETS_SESSION_TIME**: The JWT expires time.
+
 Example:
 
 ```

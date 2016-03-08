@@ -33,6 +33,7 @@ var Message = db.Message;
 
 var DeviceStatistics = db.DeviceStatistics;
 var Fact = db.Fact;
+var auth = require('./auth.service');
 
 var P = require('bluebird');
 
@@ -66,12 +67,18 @@ exports.ack = function(req, res) {
     return registration.updateAttributes({
       registrationDate: new Date()
     }).then(function(updated) {
+      var obj = updated.get({
+        plain: true
+      });
+      var token = auth.signToken(obj.device);
       res.format({
         text: function() {
-          res.status(200).send(registration.dataValues.device_group + '\r\n' + '%22eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJRCI6NTUsImlhdCI6MTQ1NzM4MzI3NCwiZXhwIjoxNDU3Mzg1MDc0fQ.qUUUtwv9KApOWI8XLjBD-GNS6xa7ZmCxYYAqQhrlFuw%22' );
+          res.status(200).send(obj.device_group + '\r\n' + JSON.stringify(token));
         },
         json: function() {
-          res.status(200).send(updated);
+
+          obj.token = token;
+          res.status(200).json(obj);
         },
         default: function() {
           res.status(406).send('Not Acceptable');

@@ -26,8 +26,8 @@ var auth = require('./auth.service');
 var router = express.Router();
 
 // Routes for Root
-router.get('/:device', auth.isAuthorized, controller.show);
-router.post('/:device',auth.isAuthorized, controller.create);
+router.get('/:device', auth.isAuthenticated, controller.show);
+router.post('/:device',auth.isAuthenticated, controller.create);
 router.put('/:device',auth.isAuthorized, controller.ack);
 
 module.exports = router;

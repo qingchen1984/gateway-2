@@ -18,7 +18,8 @@ var routerStub = {
 
 
 var authServiceStub = {
-  isAuthorized:'authService.isAuthorized'
+  isAuthorized: 'authService.isAuthorized',
+  isAuthenticated: 'authService.isAuthenticated'
 };
 
 
@@ -44,7 +45,7 @@ describe('Gateway API Router:', function() {
 
     it('should route to gateway.controller.show', function() {
       routerStub.get
-        .withArgs('/:device', 'authService.isAuthorized','gatewayCtrl.show')
+        .withArgs('/:device', 'authService.isAuthenticated','gatewayCtrl.show')
         .should.have.been.calledOnce;
     });
   });
@@ -53,7 +54,7 @@ describe('Gateway API Router:', function() {
 
     it('should route to gateway.controller.create', function() {
       routerStub.post
-        .withArgs('/:device','authService.isAuthorized', 'gatewayCtrl.create')
+        .withArgs('/:device','authService.isAuthenticated', 'gatewayCtrl.create')
         .should.have.been.calledOnce;
     });
   });

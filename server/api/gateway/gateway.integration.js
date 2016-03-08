@@ -7,11 +7,12 @@ var Registration = sqldb.Registration;
 var Announcement = sqldb.Announcement;
 var Fact = sqldb.Fact;
 var DeviceStatistics = sqldb.DeviceStatistics;
+var auth = require('./auth.service');
 var request = require('supertest');
 
 var newMessage;
 
-describe('Message API:', function() {
+describe('Gateway API:', function() {
   describe('PUT /api/gateway/:device text/plain', function() {
     var messages;
 
@@ -81,18 +82,19 @@ describe('Message API:', function() {
         });
     });
 
-    it('should respond with device group', function() {
+    it('should respond with device group and token', function() {
       messages.should.be.instanceOf(Object);
       messages.device_group.should.be.equals('666');
+      messages.should.have.a.property('token');
     });
   });
 
 
   describe('PUT /api/gateway/:device application/json', function() {
-    it('should respond with 403 when device does not exist', function(done) {
+    it('should respond with 401 when device does not exist', function(done) {
       request(app)
         .put('/api/gateway/FF:FF:FF:FF:FF:BB')
-        .expect(403)
+        .expect(401)
         .end((err, res) => {
           if (err) {
             return done(err);
@@ -170,6 +172,7 @@ describe('Message API:', function() {
       request(app)
         .get('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'text/plain')
+        .set('authorization', auth.signToken('66:66:66:66:66:66'))
         .expect(200)
         .expect('Content-Type', /text/)
         .end((err, res) => {
@@ -187,6 +190,7 @@ describe('Message API:', function() {
       request(app)
         .get('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'application/json')
+        .set('authorization', auth.signToken('66:66:66:66:66:66'))
         .expect(200)
         .expect('Content-Type', /json/)
         .end((err, res) => {
@@ -218,10 +222,11 @@ describe('Message API:', function() {
 
     describe('Tests when the device does not exist', function() {
 
-      it('should respond with 403 when the device does not exist', function(done) {
+      it('should respond with 401 when the device does not exist', function(done) {
         request(app)
           .get('/api/gateway/FF:FF:FF:FF:FF:BB')
-          .expect(403)
+          .set('authorization', auth.signToken('FF:FF:FF:FF:FF:BB'))
+          .expect(401)
           .end((err, res) => {
             if (err) {
               return done(err);
@@ -281,9 +286,10 @@ describe('Message API:', function() {
     });
 
 
-    it('Send facts', function(done) {
+    it('Send facts 66:66:66:66:66:66', function(done) {
       request(app)
         .post('/api/gateway/66:66:66:66:66:66')
+        .set('authorization', auth.signToken('66:66:66:66:66:66'))
         .send(
           [{
             'channel': 'test',
@@ -301,8 +307,24 @@ describe('Message API:', function() {
             'device': '66:66:66:66:66:66',
             'sensor': 2,
             'data': 1
-          },
-          {
+          }]
+        )
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          done();
+        });
+    });
+
+
+    it('Send facts FF:FF:FF:FF:FF:BB', function(done) {
+      request(app)
+        .post('/api/gateway/66:66:66:66:66:66')
+        .set('authorization', auth.signToken('FF:FF:FF:FF:FF:BB'))
+        .send(
+          [{
             'channel': 'test',
             'start': Date.now(),
             'delta': 0,
@@ -320,6 +342,7 @@ describe('Message API:', function() {
           done();
         });
     });
+
 
     it('should have save facts', function() {
       return Fact.findAll({

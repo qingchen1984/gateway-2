@@ -26,6 +26,10 @@ module.exports = {
   statistics: {
     sigmas: process.env.STATISTICS_SIGMAS
   },
+  secrets: {
+    session: process.env.SECRETS_SESSION,
+    sessionTime: process.env.SECRETS_SESSION_TIME,
+  },
   seedDB: process.env.SEED_DB,
   showConfig: process.env.SHOW_CONFIG,
   port: process.env.PORT,

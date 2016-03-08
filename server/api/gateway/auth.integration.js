@@ -11,7 +11,9 @@ var _ = require('lodash');
 var req = {
   params: {
     device: 'TESTE'
-  }
+  },
+  headers: {},
+  query: {},
 };
 
 var res = {
@@ -35,7 +37,7 @@ describe('Auth.service', function() {
     });
   });
 
-  describe('Unregistred device', function(done) {
+  describe('Unregistred device', function() {
     before(function() {
       return Registration.destroy({
         where: {}
@@ -58,13 +60,13 @@ describe('Auth.service', function() {
       }).should.eventually.be.least(1);
     });
 
-    it('Shoud have returned status 403', function() {
-      res.statusCode.should.be.equals(403);
+    it('Shoud have returned status 401', function() {
+      res.statusCode.should.be.equals(401);
     });
   });
 
 
-  describe('Unregistred device 5 times', function(done) {
+  describe('Unregistred device 5 times', function() {
     before(function() {
       return Registration.destroy({
         where: {}
@@ -87,14 +89,14 @@ describe('Auth.service', function() {
         }).should.eventually.be.least(1);
       });
 
-      it('Shoud have returned status 403', function() {
-        res.statusCode.should.be.equals(403);
+      it('Shoud have returned status 401', function() {
+        res.statusCode.should.be.equals(401);
       });
     });
 
   });
 
-  describe('Registred device but not authorized', function(done) {
+  describe('Registred device but not authorized', function() {
     before(function() {
       return Registration.destroy({
         where: {}
@@ -122,14 +124,14 @@ describe('Auth.service', function() {
       }).should.eventually.be.least(1);
     });
 
-    it('Shoud have returned status 403', function() {
-      res.statusCode.should.be.equals(403);
+    it('Shoud have returned status 401', function() {
+      res.statusCode.should.be.equals(401);
     });
   });
 
 
 
-  describe('Registred device but not authorized 5 times', function(done) {
+  describe('Registred device but not authorized 5 times', function() {
     before(function() {
       return Registration.destroy({
         where: {}
@@ -159,14 +161,14 @@ describe('Auth.service', function() {
         }).should.eventually.be.least(1);
       });
 
-      it('Shoud have returned status 403', function() {
-        res.statusCode.should.be.equals(403);
+      it('Shoud have returned status 401', function() {
+        res.statusCode.should.be.equals(401);
       });
     });
   });
 
 
-  describe('Registred device but authorized', function(done) {
+  describe('Registred device but authorized', function() {
     before(function() {
       return Registration.destroy({
         where: {}
@@ -187,7 +189,7 @@ describe('Auth.service', function() {
     });
   });
 
-  describe('Registred device but authorized 5 times', function(done) {
+  describe('Registred device but authorized 5 times', function() {
     before(function() {
       return Registration.destroy({
         where: {}
@@ -202,7 +204,7 @@ describe('Auth.service', function() {
       });
     });
 
-    _.times(5,function() {
+    _.times(5, function() {
       it('Shoud have authorized', function(done) {
         auth.isAuthorized(req, res, done);
       });
@@ -212,5 +214,78 @@ describe('Auth.service', function() {
       res.statusCode = 0;
     });
   });
+
+  describe('No token', function() {
+    before(function() {
+      return auth.isAuthenticated(req, res, () => {});
+    });
+
+    it('should have returned 403', function() {
+      res.statusCode.should.be.equals(403);
+    });
+  });
+
+  describe('Invalid token', function() {
+    before(function() {
+      var newReq = _.clone(req);
+      newReq.headers.authorization = '12312313123131312312312'
+      return auth.isAuthenticated(newReq, res, () => {});
+    });
+
+    it('should have returned 403', function() {
+      res.statusCode.should.be.equals(403);
+    });
+  });
+
+
+  describe('Valid token but not authorized', function() {
+
+    before(function() {
+      return Registration.destroy({
+        where: {}
+      });
+    });
+
+    before(function() {
+      return Registration.create({
+        device: 'TESTE'
+      });
+    });
+
+    before(function() {
+      var newReq = _.clone(req);
+      newReq.headers.authorization = auth.signToken('TESTE');
+      return auth.isAuthenticated(newReq, res, () => {});
+    });
+
+    it('should have returned 401', function() {
+      res.statusCode.should.be.equals(401);
+    });
+  });
+
+  describe('Valid token', function() {
+
+    before(function() {
+      return Registration.destroy({
+        where: {}
+      });
+    });
+
+    before(function() {
+      return Registration.create({
+        device: 'TESTE',
+        device_group: 'TESTE',
+        registrationDate: Date.now()
+      });
+    });
+
+    it('should have authenticated', function(done) {
+      var newReq = _.clone(req);
+      newReq.headers.authorization = auth.signToken('TESTE');
+      return auth.isAuthenticated(newReq, res, done);
+
+    });
+  });
+
 
 });
