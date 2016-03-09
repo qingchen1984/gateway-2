@@ -5,6 +5,8 @@ var jwt = require('jsonwebtoken');
 
 var Registration = db.Registration;
 
+const userAgentRe = /Meccano-IoT ?\((.*)\)/;
+
 
 function getToken(req) {
 
@@ -26,13 +28,24 @@ var validateDevice = function(req, res, next) {
     console.error('INVALID_DEVICE')
     return res.status(500).send('INVALID_DEVICE');
   }
+  var agentStr = req.get('User-Agent');
+
+
+  if(userAgentRe.test(agentStr)){
+    var array = agentStr.match(userAgentRe);
+    req.deviceType = array[1];
+  }else{
+    return res.status(406).send();
+  }
+
 
   return Registration.findOrCreate({
     where: {
       device: device,
     },
     defaults: {
-      'device': device
+      'device': device,
+      'type':req.deviceType
     }
   }).spread((entity) => {
     if (entity.device_group) {

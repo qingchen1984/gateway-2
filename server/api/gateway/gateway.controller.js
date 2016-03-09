@@ -65,7 +65,8 @@ exports.ack = function(req, res) {
     }
   }).then(function(registration) {
     return registration.updateAttributes({
-      registrationDate: new Date()
+      registrationDate: new Date(),
+      type:req.deviceType
     }).then(function(updated) {
       var obj = updated.get({
         plain: true
@@ -73,7 +74,7 @@ exports.ack = function(req, res) {
       var token = auth.signToken(obj.device);
       res.format({
         text: function() {
-          res.status(200).send(obj.device_group + '\r\n' + JSON.stringify(token));
+          res.status(200).send(obj.device_group + '\r\n' + token);
         },
         json: function() {
 

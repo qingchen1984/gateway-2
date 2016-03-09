@@ -33,6 +33,7 @@ describe('Gateway API:', function() {
       request(app)
         .put('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'text/plain')
+        .set('User-Agent', 'Meccano-IoT (Testes)')
         .expect(200)
         .expect('Content-Type', /plain/)
         .end((err, res) => {
@@ -71,6 +72,7 @@ describe('Gateway API:', function() {
       request(app)
         .put('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'application/json')
+        .set('User-Agent', 'Meccano-IoT (Testes)')
         .expect(200)
         .expect('Content-Type', /json/)
         .end((err, res) => {
@@ -94,6 +96,7 @@ describe('Gateway API:', function() {
     it('should respond with 401 when device does not exist', function(done) {
       request(app)
         .put('/api/gateway/FF:FF:FF:FF:FF:BB')
+        .set('User-Agent', 'Meccano-IoT (Testes)')
         .expect(401)
         .end((err, res) => {
           if (err) {
@@ -172,6 +175,7 @@ describe('Gateway API:', function() {
       request(app)
         .get('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'text/plain')
+        .set('User-Agent', 'Meccano-IoT (Testes)')
         .set('authorization', auth.signToken('66:66:66:66:66:66'))
         .expect(200)
         .expect('Content-Type', /text/)
@@ -190,6 +194,7 @@ describe('Gateway API:', function() {
       request(app)
         .get('/api/gateway/66:66:66:66:66:66')
         .set('Accept', 'application/json')
+        .set('User-Agent', 'Meccano-IoT (Testes)')
         .set('authorization', auth.signToken('66:66:66:66:66:66'))
         .expect(200)
         .expect('Content-Type', /json/)
@@ -226,6 +231,7 @@ describe('Gateway API:', function() {
         request(app)
           .get('/api/gateway/FF:FF:FF:FF:FF:BB')
           .set('authorization', auth.signToken('FF:FF:FF:FF:FF:BB'))
+          .set('User-Agent', 'Meccano-IoT (Testes)')
           .expect(401)
           .end((err, res) => {
             if (err) {
@@ -290,6 +296,7 @@ describe('Gateway API:', function() {
       request(app)
         .post('/api/gateway/66:66:66:66:66:66')
         .set('authorization', auth.signToken('66:66:66:66:66:66'))
+        .set('User-Agent', 'Meccano-IoT (Testes)')
         .send(
           [{
             'channel': 'test',
@@ -323,6 +330,7 @@ describe('Gateway API:', function() {
       request(app)
         .post('/api/gateway/66:66:66:66:66:66')
         .set('authorization', auth.signToken('FF:FF:FF:FF:FF:BB'))
+        .set('User-Agent', 'Meccano-IoT (Testes)')
         .send(
           [{
             'channel': 'test',

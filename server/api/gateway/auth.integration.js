@@ -14,6 +14,9 @@ var req = {
   },
   headers: {},
   query: {},
+  get:function() {
+    return 'Meccano-IoT (testes)'
+  }
 };
 
 var res = {
@@ -37,6 +40,61 @@ describe('Auth.service', function() {
     });
   });
 
+  describe('Unspecified User-Agent', function() {
+
+    before(function() {
+      return Registration.destroy({
+        where: {}
+      });
+    });
+
+    before(function() {
+      return Registration.create({
+        device: 'TESTE'
+      });
+    });
+
+    before(function() {
+      var newReq = _.clone(req);
+      newReq.get = function () {
+        return;
+      }
+      return auth.isAuthorized(newReq, res, () => {});
+    });
+
+    it('should have returned 406', function() {
+      res.statusCode.should.be.equals(406);
+    });
+  });
+
+
+  describe('Invalid User-Agent', function() {
+
+    before(function() {
+      return Registration.destroy({
+        where: {}
+      });
+    });
+
+    before(function() {
+      return Registration.create({
+        device: 'TESTE'
+      });
+    });
+
+    before(function() {
+      var newReq = _.clone(req);
+      newReq.get = function () {
+        return 'Testes 5.0.1';
+      }
+      return auth.isAuthorized(newReq, res, () => {});
+    });
+
+    it('should have returned 406', function() {
+      res.statusCode.should.be.equals(406);
+    });
+  });
+
   describe('Unregistred device', function() {
     before(function() {
       return Registration.destroy({
@@ -55,7 +113,8 @@ describe('Auth.service', function() {
     it('Shoud have just one registration', function() {
       return Registration.count({
         where: {
-          device: 'TESTE'
+          device: 'TESTE',
+          type: 'testes'
         }
       }).should.eventually.be.least(1);
     });
