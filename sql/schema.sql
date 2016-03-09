@@ -172,6 +172,7 @@ VIEW `DeviceStatus` AS
         `r`.`registrationDate` AS `registrationDate`,
         `r`.`creationDate` AS `creationDate`,
         `r`.`memo` AS `memo`,
+        `r`.`type` AS `type`,
         `a`.`lastAnnouncementDate` AS `lastAnnouncementDate`,
         TIMESTAMPDIFF(MINUTE,
             `a`.`lastAnnouncementDate`,
