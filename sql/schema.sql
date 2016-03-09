@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS `Registration` (
     `registrationDate` TIMESTAMP NULL DEFAULT NULL,
     `creationDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `memo` VARCHAR(1024) NULL DEFAULT NULL,
+    `type` VARCHAR(20) NULL,
     PRIMARY KEY (`device`)
 );
 
@@ -147,7 +148,7 @@ DROP TABLE IF EXISTS `DeviceActivity`;
 USE `IOTDB`;
 CREATE OR REPLACE SQL SECURITY DEFINER
 VIEW `DeviceActivity` AS
-    SELECT 
+    SELECT
         `Facts`.`device` AS `device`,
         `Facts`.`hour` AS `hour`,
         COUNT(0) AS `updates`
@@ -165,7 +166,7 @@ DROP VIEW IF EXISTS `DeviceStatus` ;
 DROP TABLE IF EXISTS `DeviceStatus`;
 CREATE OR REPLACE SQL SECURITY DEFINER
 VIEW `DeviceStatus` AS
-    SELECT 
+    SELECT
         `r`.`device` AS `device`,
         `r`.`device_group` AS `device_group`,
         `r`.`registrationDate` AS `registrationDate`,
