@@ -145,7 +145,6 @@ CREATE TABLE IF NOT EXISTS `DeviceStatus` (
 -- -----------------------------------------------------
 DROP VIEW IF EXISTS `DeviceActivity` ;
 DROP TABLE IF EXISTS `DeviceActivity`;
-USE `IOTDB`;
 CREATE OR REPLACE SQL SECURITY DEFINER
 VIEW `DeviceActivity` AS
     SELECT
