@@ -1,2 +1,6 @@
-*
-!dist/*
+config
+node_modules
+sql
+mocha.conf.js
+Gruntfile.js
+README.mb
