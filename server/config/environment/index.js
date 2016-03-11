@@ -78,11 +78,6 @@ if (config.showConfig) {
   console.log();
 }
 
-if(config.secrets.session === 'meccano-gateway-secret' && config.env === 'production'){
-  console.error('Security Error!! On production you should set the SECRETS_SESSION ENV.')
-  process.exit(1);
-}
-
 function show(object, parent) {
   _.forIn(object, function(value, key) {
     var completeKey;
