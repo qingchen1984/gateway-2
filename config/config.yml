@@ -1,16 +1,21 @@
 default:
   port: 3000
-  timezone: Brazil/East
   tests:
     auth: true
     statistic: true
     zero: true
-  mysql:
-    host: 'database_address'
-    port: 3306
-    user: 'user'
-    password: 'password'
-    database: 'IOTDB'
-    connectionLimit: 10
   statistics:
     sigmas: 6
+  mysql:
+    uri: 'mysql://localhost:3306/IOTDB'
+    options:
+      logging: true
+      pool:
+        maxConnections: 10
+        minConnections: 1
+
+test:
+  mysql:
+    uri: 'mysql://test:test@192.168.99.100:3306/IOTDB_TEST'
+    options:
+      logging: false

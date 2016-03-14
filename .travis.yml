@@ -1,0 +1,44 @@
+language: node_js
+cache:
+  apt: true
+  directories:
+  - node_modules
+node_js:
+- 4.3.1
+sudo: required
+dist: trusty
+matrix:
+  fast_finish: true
+  allow_failures:
+  - node_js: 5.1.1
+before_install:
+- sudo apt-get install -y docker mysql-server mysql-client
+- mysql -u root < sql/schema.sql
+before_script:
+- npm install -g grunt-cli
+env:
+  global:
+  - NODE_ENV: travis
+  - MYSQL_URI: mysql://root@localhost:3306/IOTDB
+  - COMMIT: "${TRAVIS_COMMIT::8}"
+notifications:
+  slack:
+    secure: WVtQtNRlSv3IXPxNKTr+EpaIDiRS7fJUot40RvWg/WOh/Sw1nxelEeIxmJ+Zll9ZUhcdjVyYCzpkENWXlCpAKFM6gMIyB2ycgYWDggl3M5Emy6vo4ARNIHwG6yaqttjnNvekuqJQV4S/FM15znM8AFvMoXfl/FK9A2V5j5oYEv2VnF3c3ohozsUBhD/JEzCDTdRlE4GCx2Tq9Mmu+NS5tDBm12QmHK1/5D721VaGkm+2DZTyH4mVxdpJXyS5bY+HmTstS+n4rmTgpdk6+VUCh1ihzou9bsfWVoVFTV1ymBef2H6VEFBkqGRUopqX/GpcYtavJHGQqxpS5AkiyRE9qTcxtFR0FCJyZdki+tjJ4Zvo3wiHWIOuqoIQPASGNe9CpZcDP1SnLqewQN8C5CF6xd6i/DWWxTchE9BVbZ8+PeH+svUTPOPaf3iaUUAakIN5tFEKOxSenAmuQTSHtxX3gKNh+Ep9yCc7eFlyDjihAjBTrTMMdbmCxEaX5PIdOOsKigciO37QZjOM0Vnk9HWTqgolKEzbKuQiHK1Y58gtge5/U7dXBrCkiwkTOq6QYJQTbgSmxJAqNBr/U4ZxRcABzx24hDh4NYJHDBk+cjp6jQIfJMrty7fUvwrq7PPlhI0mzXVsYEGIGjShmrpsjI1/Cq1RxiTUpdGTuWBoBc+zwNI=
+
+before_deploy: test $TRAVIS_TEST_RESULT = 0 && cd $TRAVIS_BUILD_DIR && tar -zcvf meccano-gateway-$TRAVIS_TAG.tar.gz server config package.json
+deploy:
+  provider: releases
+  file: meccano-gateway-$TRAVIS_TAG.tar.gz
+  skip_cleanup: true
+  on:
+    tags: true
+  api_key:
+    secure: Be0ExFXhS0pd3QJpsHqhfTCgEdOVCBhnReEObMFkVyIhpK9mCnDFxglZsu+I7Ijh1m4ZNdOA5qU3TvcVUflnMH4JjFoWZMeif8ShZ/HWmbWv6clHjfZDKeJuNjHf04WF8YwDNkVQ60chs34S5UfQCPZKR/xJg52kvSZkisoKS+OCjeg2redprCIzDlHQt/XfyEodg4DKqqdc9ZKpRorV9LEeqIsuo3YLUAZUbOBe6kdiwh2zo/M+laRpFyx+6tfci4zCXPcjeZ+HHUSY+sWStcX0lK3hZp24vEEo2CL+83tmwVmyv/99Z30PCdXdQncE5Ka608bGtoakc53XlZSEKtXDuHhf9UOE/14y5q+110vGabplSJs54ufpHCZPjKkv7nD7VirH+tABDO5RuYMe0qj6y0ctttgx/taCvpFp5NSKi7HjUanPQc1nvOOprM4eAkgGaZvbKDZaItnZYy2r9iFDqNkRtntN1uvopkhKvoRhcn9iWQkL1JgqDq2kYEDFZwiIbXJtwbqJmbvYN8fotaOLvsRTgWNFeNYOdwjMshvnEUrNfVwqwZZhimf6MtsbW3BucQYi+pwvCenJnwDg927f7JeikHORfTRCD7Fk+zOu1JD5cJ0bCOP2V9arPtq+cNsiIYjTIvjEcdGWjWjm5gw5g1KB1WMg3RFsNC5wW2Q=
+after_deploy:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=meccano/gateway
+  - docker build -f docker/Dockerfile -t $REPO:$COMMIT .
+  - docker images
+  - docker tag $REPO:$COMMIT $REPO:latest
+  - docker tag $REPO:$COMMIT $REPO:$TRAVIS_TAG
+  - docker push $REPO

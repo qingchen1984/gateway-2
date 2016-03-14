@@ -1,5 +1,5 @@
 /*
-* Meccano IOT Gateway
+* Meccano IOT Webconsole
 *
 *
 * This program is free software: you can redistribute it and/or modify
@@ -19,15 +19,23 @@
 
 'use strict';
 
-var express = require('express');
-var controller = require('./gateway.controller');
-var auth = require('./auth.service');
+module.exports = function(sequelize, DataTypes) {
+  var model = sequelize.define('DeviceHistoryStatus', {
+    status:DataTypes.STRING,
+    numberOfDevices:DataTypes.INTEGER,
+    creationDate:DataTypes.DATE
 
-var router = express.Router();
+  }, {
+    freezeTableName: true,
+    timestamps: false,
+    defaultScope:{
+      order:'creationDate DESC'
+    }
+  });
 
-// Routes for Root
-router.get('/:device', auth.isAuthenticated, controller.show);
-router.post('/:device',auth.isAuthenticated, controller.create);
-router.put('/:device',auth.isAuthorized, controller.ack);
+  model.removeAttribute('id');
+  model.removeAttribute('createdAt');
+  model.removeAttribute('updatedAt');
 
-module.exports = router;
+  return model;
+}

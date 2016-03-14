@@ -1,11 +1,11 @@
 {
   "name": "meccano-iot-gateway",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Meccano IoT Gateway is a multi-purpose IoT (Internet of Things) board and software plataform.",
   "main": "server/app.js",
   "scripts": {
     "start": "node server/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test"
   },
   "keywords": [
     "meccano",
@@ -15,23 +15,34 @@
   "author": "Meccano IoT",
   "license": "GPL-3.0",
   "dependencies": {
-    "body-parser": "^1.14.2",
-    "compression": "^1.6.0",
-    "errorhandler": "^1.4.2",
-    "express": "^4.13.3",
-    "morgan": "^1.6.1",
-    "mysql": "^2.10.0",
-    "node-yaml-config": "0.0.3"
+    "bluebird": "^3.3.3",
+    "body-parser": "^1.15.0",
+    "compression": "^1.6.1",
+    "errorhandler": "^1.4.3",
+    "express": "^4.13.4",
+    "jsonwebtoken": "^5.7.0",
+    "lodash": "^4.6.0",
+    "morgan": "^1.7.0",
+    "mysql": "^2.10.2",
+    "node-yaml-config": "0.0.3",
+    "sequelize": "^3.19.3"
   },
   "devDependencies": {
+    "babel-core": "^6.6.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.2.0",
+    "chai-things": "^0.2.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-env": "^0.4.4",
     "grunt-mocha-test": "^0.12.7",
     "mocha": "^2.3.3",
+    "proxyquire": "^1.7.4",
     "should": "^7.1.0",
-    "supertest": "^1.1.0"
+    "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0",
+    "supertest": "^1.2.0"
   },
   "repository": {
     "type": "git",
