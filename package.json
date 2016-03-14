@@ -25,6 +25,7 @@
     "morgan": "^1.7.0",
     "mysql": "^2.10.2",
     "node-yaml-config": "0.0.3",
+    "semver": "^5.1.0",
     "sequelize": "^3.19.3"
   },
   "devDependencies": {
