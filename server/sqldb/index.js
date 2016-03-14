@@ -33,6 +33,7 @@ db.Message = db.sequelize.import('../model/message.model');
 db.User = db.sequelize.import('../model/user.model');
 db.DeviceHistoryStatus = db.sequelize.import('../model/deviceHistoryStatus.model');
 db.DeviceActivity = db.sequelize.import('../model/deviceActivity.model');
+db.Release = db.sequelize.import('../model/release.model');
 
 
 db.page = function(Model, params) {
