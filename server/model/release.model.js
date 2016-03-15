@@ -27,12 +27,27 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
-    type: DataTypes.STRING(20),
-    major: DataTypes.INTEGER,
-    minor: DataTypes.INTEGER,
-    patch: DataTypes.INTEGER,
+    type: {
+      type: DataTypes.ENUM('ESP8266'),
+      allowNull: false,
+    },
+    major: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    minor: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    patch: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     prerelease: DataTypes.STRING(20),
-    firmwareBlob: DataTypes.BLOB('medium')
+    firmwareBlob: {
+      type: DataTypes.BLOB('medium'),
+      allowNull: false,
+    }
   }, {
     getterMethods: {
       version: function() {

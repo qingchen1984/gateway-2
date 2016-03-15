@@ -25,26 +25,27 @@ var util = require('../../components/util');
 
 exports.show = function(req, res) {
   return Release.findAll({
-    where: {
-      type: req.params.type,
-      prerelease: null
-    },
-    order: 'major DESC , minor DESC , patch DESC , prerelease DESC'
-  }).then(util.respondWithResult(res)).catch(util.handleError(res));
+      where: {
+        type: req.params.type,
+        prerelease: null
+      },
+      order: 'major DESC , minor DESC , patch DESC , prerelease DESC'
+    })
+    .then(util.respondWithResult(res))
+    .catch(util.handleError(res));
 };
 
 exports.update = function(req, res) {
   var type = req.params.type;
   if (type === 'ESP8266') {
     return updateESP(req, res);
-  }else{
+  } else {
     res.status(406).send('Not supported');
   }
-
 };
 
 
-function checkVersion(currentVersion,type) {
+function checkVersion(currentVersion, type) {
   currentVersion = semver.parse(currentVersion);
   if (currentVersion) {
     return Release.findOne({
@@ -53,10 +54,10 @@ function checkVersion(currentVersion,type) {
         prerelease: null
       },
       order: 'major DESC , minor DESC , patch DESC'
-    }).then( (latest) => {
-      if(latest && semver.gt(latest.version, currentVersion)){
+    }).then((latest) => {
+      if (latest && semver.gt(latest.version, currentVersion)) {
         return latest;
-      }else{
+      } else {
         return;
       }
     });
@@ -71,11 +72,11 @@ function checkVersion(currentVersion,type) {
 function updateESP(req, res) {
   if (validateHeaders(req)) {
     var version = semver.parse(req.get('X-ESP8266-VERSION'));
-    return checkVersion(version,req.params.type)
-      .then( (latest) => {
-        if(latest){
+    return checkVersion(version, req.params.type)
+      .then((latest) => {
+        if (latest) {
           res.status(200).send(latest.firmwareBlob);
-        }else {
+        } else {
           res.status(304).send();
         }
       })

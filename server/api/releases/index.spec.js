@@ -4,8 +4,10 @@ var proxyquire = require('proxyquire').noPreserveCache();
 
 var releasesCtrlStub = {
   show: 'releasesCtrl.show',
-  update: 'releasesCtrl.update',
+  update: 'releasesCtrl.update'
 };
+
+
 
 var routerStub = {
   get: sinon.spy(),
@@ -37,7 +39,7 @@ describe('OTA Update API Router:', function() {
 
     it('should route to releases.controller.show', function() {
       routerStub.get
-        .withArgs('/:type','releasesCtrl.show')
+        .withArgs('/:type', 'releasesCtrl.show')
         .should.have.been.calledOnce;
     });
   });
@@ -47,8 +49,10 @@ describe('OTA Update API Router:', function() {
 
     it('should route to releases.controller.update', function() {
       routerStub.get
-        .withArgs('/:type/update','releasesCtrl.update')
+        .withArgs('/:type/update', 'releasesCtrl.update')
         .should.have.been.calledOnce;
     });
   });
+
+
 });
