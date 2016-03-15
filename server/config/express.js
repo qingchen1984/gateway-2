@@ -25,7 +25,6 @@ var compression = require('compression');
 var bodyParser = require('body-parser');
 var errorHandler = require('errorhandler');
 var path = require('path');
-var config = require('./config');
 
 module.exports = function(app) {
   var env = app.get('env');

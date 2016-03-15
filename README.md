@@ -1,6 +1,6 @@
 # About Meccano IoT Project
 
-![](https://david-dm.org/meccano-iot/gateway.svg)
+![](https://david-dm.org/meccano-iot/gateway.svg) [![Build Status](https://travis-ci.org/meccano-iot/gateway.svg?branch=master)](https://travis-ci.org/meccano-iot/gateway)
 
 Meccano project is a multi-purpose IoT (Internet of Things) board and software platform created by Luciano Kadoya, Rogério Biondi, Diego Osse and Talita Paschoini. Its development started in early 2014 as a closed R&D project in the Software Architecture Division, with the aim of creating a board which is robust, based on a modern microprocessor (ESP8266), cheap, easy to implement and deploy through the 750 retail stores to perform several functions, such as:
 
@@ -48,23 +48,22 @@ Configure the config/config.yml file as follows:
 ```
 default:
   port: 3000
-  timezone: Brazil/East
   tests:
     auth: true
     statistic: true
     zero: true
-  mysql:
-    host: 'mysql_database_address'
-    port: 3306
-    user: 'user'
-    password: 'pass'
-    database: 'IOTDB'
-    connectionLimit: 10
   statistics:
     sigmas: 6
+  mysql:
+    uri: 'mysql://localhost:3306/IOTDB'
+    options:
+      logging: true
+      pool:
+        maxConnections: 10
+        minConnections: 1
 ```
 
-You should configure the `host`, `port`, `user`, `password` `parameters`.
+You should configure the `address`, `port`, `user`, `password` `parameters`.
 If you have a high concurrency, you must increase the connectionLimit accordingly.
 Leave the statistics session and "sigmas" parameter as is.
 
@@ -122,10 +121,14 @@ For each yaml configuration parameter there is a corresponding environment varia
 
 - **NODE_ENV**: name of the environment. You may set this variable according to the name of your environment, for example prod, dev, test.
 
+- **SECRETS_SESSION**: The JWT secret.
+
+- **SECRETS_SESSION_TIME**: The JWT expires time.
+
 Example:
 
 ```
-export NODE_ENV=prod
+export NODE_ENV=production
 ```
 
 And in the config.yml file you may specify different environment variables:
@@ -133,7 +136,7 @@ And in the config.yml file you may specify different environment variables:
 ```
 default:
   port: 8080
-prod:
+production:
   port: 80
 ```
 
@@ -148,12 +151,12 @@ Example:
 export PORT=8080
 ```
 
-- **HOSTNAME**: Begin accepting connections on the specified `HOSTNAME`. If the hostname is omitted, the server will accept connections on any IPv6 address (`::`) when IPv6 is available, or any IPv4 address (`0.0.0.0`) otherwise.
+- **ADDRESS**: Begin accepting connections on the specified `ADDRESS`. If the hostname is omitted, the server will accept connections on any IPv6 address (`::`) when IPv6 is available, or any IPv4 address (`0.0.0.0`) otherwise.
 
 Example:
 
 ```
-export HOSTNAME=mydomain.domain
+export ADDRESS=mydomain.domain
 ```
 
 
@@ -191,9 +194,16 @@ export TESTS_AUTH=true
 
 #### Database configuration
 
-The parameters bellow control the connection and behaviour of the RDBMS.
+#### Database configuration
 
-- **MYSQL_HOST**: database hostname or ip address.
+The parameters bellow control the connection and behavior of the RDBMS.
+You can use all in one:
+
+- **MYSQL_URI**: the uri connection string(`mysql://user:pass@host:port/database`).
+
+Or you can use split configuration:
+
+- **MYSQL_HOST**: database hostname or IP address.
 
 - **MYSQL_PORT**: database port.
 
@@ -201,17 +211,16 @@ The parameters bellow control the connection and behaviour of the RDBMS.
 
 - **MYSQL_PASSWORD**: database password.
 
-- **MYSQL_DATABASE**: database name or instance id.
+- **MYSQL_OPTIONS_POOL_MAXCONNECTIONS**: Max connections number on the connections poll
 
-- **MYSQL_CONNECTIONLIMIT**: maximum number of connections.
+- **MYSQL_OPTIONS_POOL_MINCONNECTIONS**: Min connections number on the connections poll
 
+**Note:** You can only use mysql URI or split configuration(username,password, database,host,port).
 
 
 #### Statistic configuration
 
 **STATISTICS_SIGMAS**: this option will be valid only if the CHECK_STATISTIC_TEST is enabled. This controls the behaviour of the gateway regarding the deviation of data. Every information received that deviates more than the number of sigmas will be considered noise and discarded by the gateway. For six-sigma, there is a probability of 99.99966%. The default value for this parameter is 6 sigmas.
-
-
 
 
 ## Device Registration API
@@ -225,125 +234,9 @@ The registration process works the following way:
 4. At any time, you may check the registration status of each device.
 
 
-### Registering a new Device
-
-To register the device in the gateway:
-
-```
-curl -X POST -H "Content-Type: application/json" -d '{ "device":"99:99:99:99:99:99", "device_group": 1 }' 'http://gateway_address/api/registration'
-```
-
-- 99:99:99:99:99:99 is the mac-address/device id of the meccano board/esp8266.
-
-- The device id is the mac-address of the Meccano Board (ESP8266).
-You should choose a device_group for your device. This attribute is used to group several devices according its function, place or your decision. If you don't need to group any device, choose any number or one (1) as default;
-
-- After the device is registered, it can contact the gateway and send data.
-
-- Everytime your device is powered on, it will use the meccano-client library to contact the gateway and do the acknowledgment process. Meccano Iot Gateway supports automatic device acknowledgement. The only thing you need to do is to include the meccano library to your sketch and configure the server/port address.
-
-
-### Getting the Device Registration information
-
-You may check the device registration any time, calling the API:
-
-```
-curl -X GET -H "Content-Type: application/json" 'http://gateway_address/api/registration?device=99:99:99:99:99:99'
-```
-
-- 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
-
-
-### Unregistering a Device
-
-You may unregister the device calling the API:
-
-```
-curl -X DELETE 'http://localhost:3000/api/registration?device=99:99:99:99:99:99'
-```
-
-- 99:99:99:99:99:99 is the mac-address of the meccano board/esp8266.
-
-
-
 # Meccano APIs
 
 Meccano IoT Gateway offers an API catalog for Registration and Messaging. In future releases there will be several others.
 You may download the Postman test collection here:
 
-https://www.getpostman.com/collections/ea7277b4935963aa0d3f
-
-
-
-## Message API
-
-Message API is used to send messages/commands to devices.
-You may send a pre-built **REBOOT** command to Meccano board and it will restart.
-
-You may implement your own commands. Examples:
-
-- **BLINK**: for device blinking a led attached to a digital port;
-- **BUZZ_ON** and **BUZZ_OFF**: in order to activate/deactivate a BUZZ module;
-- **RELAY_ON** and **RELAY_OFF**: switching on and off an appliance or lamp;
-- **ROTATE LEFT 45** : command a servo motor to rotate left 45 degrees.
-
-
-### Sending messages to device
-
-You may send a message to any device using the following command/api:
-
-```
-curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -H "Postman-Token: d9da6c25-d1d5-8546-a1ce-ff2e6647a2b6" -d '{
-    "device": "18:fe:34:fd:b2:a8",
-    "sender": "SYSTEM",
-    "delivery_type": "TRANSIENT",
-    "message": "REBOOT"
-}' 'http://gateway_address/api/messages/'
-```
-
-- Device id is the mac-address of the meccano board.
-
-- There are two delivery types of message:
-
-1. **TRANSIENT**: that kind of message will be cleared by Meccano IoT gateway after delivery;
-2. **PERSISTENT**: that kind of message will be permanent, not cleared by gateway after delivery;
-
-- You must specify the **sender** attribute. If you don't want to detail the sender, use **SYSTEM**.
-
-The message should be the pre-built **REBOOT** or any other custom message you want to implement on device.
-
-
-
-### List the messages of a device
-
-You may list all the messages of a device:
-
-```
-curl -X GET 'http://localhost:3000/api/messages/device/:device'
-```
-
-- device parameter is the mac-address, for example: 18:fe:34:fd:b2:a8
-
-
-
-### Get the message information
-
-It's possible to access a message, using the GET operation of the API:
-
-```
-curl -X GET 'http://localhost:3000/api/messages/:id'
-```
-
-- where id is the ID of the message you want to access to.
-
-
-
-### Remove a message
-
-You may remove a command/message for the device using the API:
-
-```
-curl -X DELETE 'http://localhost:3000/api/messages/:id'
-```
-
-- where id is the ID of the message you want to access to.
+[![Run in Postman](https://run.pstmn.io/button.png)](https://www.getpostman.com/run-collection/898cbb6308a49edac4af)

@@ -20,14 +20,13 @@
 'use strict';
 
 var express = require('express');
-var controller = require('./gateway.controller');
-var auth = require('./auth.service');
+var controller = require('./releases.controller');
 
 var router = express.Router();
 
 // Routes for Root
-router.get('/:device', auth.isAuthenticated, controller.show);
-router.post('/:device',auth.isAuthenticated, controller.create);
-router.put('/:device',auth.isAuthorized, controller.ack);
+router.get('/:type', controller.show);
+router.get('/:type/update', controller.update);
+
 
 module.exports = router;
