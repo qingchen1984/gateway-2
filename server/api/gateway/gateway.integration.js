@@ -12,7 +12,7 @@ var request = require('supertest');
 
 var newMessage;
 
-describe('Gateway API:', function() {
+describe('[Gateway API]', function() {
   describe('PUT /api/gateway/:device text/plain', function() {
     var messages;
 

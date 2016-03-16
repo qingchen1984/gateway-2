@@ -30,10 +30,7 @@ var res = {
   }
 };
 
-describe('Auth.service', function() {
-
-
-
+describe('[Auth Service]', function() {
   before(function() {
     return Registration.destroy({
       where: {}
