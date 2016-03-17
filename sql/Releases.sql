@@ -1,3 +1,6 @@
+-- -----------------------------------------------------
+-- Releases Table - for OTA Update
+-- -----------------------------------------------------
 CREATE TABLE `Releases` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` varchar(20) DEFAULT NULL,
