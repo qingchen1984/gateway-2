@@ -5,6 +5,13 @@ CREATE SCHEMA IF NOT EXISTS `IOTDB`;
 USE `IOTDB` ;
 
 -- -----------------------------------------------------
+-- Create user and assign permissions - PLS CHANGE PW!
+-- -----------------------------------------------------
+CREATE USER iot IDENTIFIED BY 'secret$1';
+GRANT ALL ON IOTDB.* TO 'iot'@'%';
+GRANT ALL ON IOTDB TO 'iot'@'%';
+
+-- -----------------------------------------------------
 -- Table `Announcement`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `Announcement` ;
