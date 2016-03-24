@@ -21,11 +21,14 @@ env:
   - NODE_ENV: travis
   - MYSQL_URI: mysql://root@localhost:3306/IOTDB
   - COMMIT: "${TRAVIS_COMMIT::8}"
+  - secure: qOX+hIqfYieekdyfR/Fhgal9aqgvfTuOIhKSKRhIDuSz+ioEI4HK4Kkp4R3vlH6O6fmV89oDQPclcKuUTFac9SvgmNnAwplb8hkOAu56poYXP4WKdtC8VjMEDGiwTcA+kGuDMbe6Q0QfYpB6Kv5zQtWcmqvWSe305fZOVod7hBCwbS0JDAPoukRuSEuCSxkZ6es+04ZuMX9WtUl0CT7P87CHBr5WamKPhU3IY2VHo35vSKBS1gT3VnyJvC1svap7FUSoMmgek9s4BHFWy9SK4nyWP2vsiyZjk7CCb8siQKV+Q//QbBv3UUkGlgb5E2Ewxwl6jVI3+i2br+nR0de2NX8LAy/zspKopO8cTQRTIrE747X0gkPrfUTBSxrwSSS7Upq/aJOhOzvePjvePCULYeBWxVIPUrYB08VCiMe6EsFlq3g5WHbL/p2r+eDuu9UbhUBKGrAFPID0+AD7geDa7iSIVvL0lZa8z+lKbmbjhRKV8vDeWUIoyJAToI/pflbt05zCJTOEKVXtxANJE4+PlEYPLNr7J96M1ptdwOLgGIDYfIRQkJi5rrwrgkcxpjXJ1vlufT7Ni/rt9AcSGYWeTOHnEdGm3vPONCO73a/GLXFcc+o6RzyobmTDBZmbqmo/koe9KK14DEwTVVe6xiKPipDlDJdwGiktHyH9XDggZMM=
+  - secure: KGLGhE0pVGFTKHLvSyVnKAxlCbcuanerW0NtIX1+rsRN576RdJJf9fkzq3vcHsMd/QyW/31vdPHeshZFNA+VjWqrFAX37NjTIpd9QGc40/biODOlPi83SeDTSF9R8jb90IDSp1HDwn4jmyWBMb73xWjEl9tJ0lJ7hW/hwdXMIfy0ZWjDrE/Wy7qbRBdIxxZH5Y4v3DlS3agMMDI2ZbgJpb4Un9nqvlXSMYP5fi/hNxARHfF49BnkdEQa6ywxGYaWFRAOa2XHYPxiWQeb7Wl0zzRm3mawjyKmhAIVWWImxNxn/+W0pYeUZH8eSufXFCJqxpvvpB48xbBRvlbBuquFSgm41ZQ1KXkbfdfOb19U1QEYvGTTz2vG3jxeHqQsuRFjQCTzxJgVF+W2cyO45/3sNeRQPUwNJWSR4dtBNLxyzT4pMYXGe81Wtq+HG1ipsFXZmBWPRnLhJS+DECTYkNdFUfr3i0TIA+xnnSmN23nW+ygDR0aJEte05xbOn2dNaT3WS0t30+t9Fx8gJLyNvyiRJsHCD1D3MU7C5cN+E4G/nvvJB+pZTpbOvjJ5G1dEzhOS70w+tkIuDecW4JdvzxN+FauT45qmN5/WKGf2xpkb5Levxx1r0P27Dvm7x887l3SIRpJ/OFOPvJALCVLYoGlFmmnWJAQbEySoa1+xCM3aZAs=
+  - secure: EqEHvmIJVtK/qI/iogFBnytB6zyZXgUc9+ZrJ2ShWjKRLe2Nre1GpcOsfpJ29l+4cpq5NvJF6tQvGwF06cp5Ui0HvzkyI0HLrYiigcmGy1sEOgszvAKtCwA3MvJ/+w+2WK8d45nfxTaH9z+/qnyeuBq257+irkUGG8iEk/ot5QS+WcML9LSnrujp86I4UKNpiX6pFgyT61BOjMGaEBGmhjLRzWU4rBJXpr7NirQEa2mM0uD7r5vDcM9M4wMdsg8fS+l4lyt0upRP7r9aSvtaqL5IbbjVp33LMY3950W7VAL3tsTTFHvN8llIAIh9XrOb9eZivLfUTLGCMaqindmt3FB6pZLx4FqPfAVYE7mayVe3qD+hg1aIGbiXyD9ce35baxGH7TYViWya+/JgUFrsxwTw5AremW9LMJ6WpybvI6Kxpxw7MaskuyNqI2SMVnRP4VymNZx438KC2Htox0h5uI2k2JmkT3cCY9B50dokKA6B3BFNs9mhtRvNBMXEpgYAvS9Yxct1KNriWr2ISnMehRDcLpeDRzQPr59MoXbc6lDD9Od2oBSrnxo4H70Lik8/E7oqfzpkF/zWONywxwy1Iv39u5iiYC16GFKRVUh8U0aEckDL0b1cD4ZHkv6WQCFcBLdYLO4hmXAtTfDntTLvI7bffT7xkGzLnQfOhlPO4bE=
 notifications:
   slack:
     secure: WVtQtNRlSv3IXPxNKTr+EpaIDiRS7fJUot40RvWg/WOh/Sw1nxelEeIxmJ+Zll9ZUhcdjVyYCzpkENWXlCpAKFM6gMIyB2ycgYWDggl3M5Emy6vo4ARNIHwG6yaqttjnNvekuqJQV4S/FM15znM8AFvMoXfl/FK9A2V5j5oYEv2VnF3c3ohozsUBhD/JEzCDTdRlE4GCx2Tq9Mmu+NS5tDBm12QmHK1/5D721VaGkm+2DZTyH4mVxdpJXyS5bY+HmTstS+n4rmTgpdk6+VUCh1ihzou9bsfWVoVFTV1ymBef2H6VEFBkqGRUopqX/GpcYtavJHGQqxpS5AkiyRE9qTcxtFR0FCJyZdki+tjJ4Zvo3wiHWIOuqoIQPASGNe9CpZcDP1SnLqewQN8C5CF6xd6i/DWWxTchE9BVbZ8+PeH+svUTPOPaf3iaUUAakIN5tFEKOxSenAmuQTSHtxX3gKNh+Ep9yCc7eFlyDjihAjBTrTMMdbmCxEaX5PIdOOsKigciO37QZjOM0Vnk9HWTqgolKEzbKuQiHK1Y58gtge5/U7dXBrCkiwkTOq6QYJQTbgSmxJAqNBr/U4ZxRcABzx24hDh4NYJHDBk+cjp6jQIfJMrty7fUvwrq7PPlhI0mzXVsYEGIGjShmrpsjI1/Cq1RxiTUpdGTuWBoBc+zwNI=
-
-before_deploy: test $TRAVIS_TEST_RESULT = 0 && cd $TRAVIS_BUILD_DIR && tar -zcvf meccano-gateway-$TRAVIS_TAG.tar.gz server config package.json
+before_deploy: test $TRAVIS_TEST_RESULT = 0 && cd $TRAVIS_BUILD_DIR && tar -zcvf meccano-gateway-$TRAVIS_TAG.tar.gz
+  server config package.json
 deploy:
   provider: releases
   file: meccano-gateway-$TRAVIS_TAG.tar.gz
@@ -35,10 +38,10 @@ deploy:
   api_key:
     secure: Be0ExFXhS0pd3QJpsHqhfTCgEdOVCBhnReEObMFkVyIhpK9mCnDFxglZsu+I7Ijh1m4ZNdOA5qU3TvcVUflnMH4JjFoWZMeif8ShZ/HWmbWv6clHjfZDKeJuNjHf04WF8YwDNkVQ60chs34S5UfQCPZKR/xJg52kvSZkisoKS+OCjeg2redprCIzDlHQt/XfyEodg4DKqqdc9ZKpRorV9LEeqIsuo3YLUAZUbOBe6kdiwh2zo/M+laRpFyx+6tfci4zCXPcjeZ+HHUSY+sWStcX0lK3hZp24vEEo2CL+83tmwVmyv/99Z30PCdXdQncE5Ka608bGtoakc53XlZSEKtXDuHhf9UOE/14y5q+110vGabplSJs54ufpHCZPjKkv7nD7VirH+tABDO5RuYMe0qj6y0ctttgx/taCvpFp5NSKi7HjUanPQc1nvOOprM4eAkgGaZvbKDZaItnZYy2r9iFDqNkRtntN1uvopkhKvoRhcn9iWQkL1JgqDq2kYEDFZwiIbXJtwbqJmbvYN8fotaOLvsRTgWNFeNYOdwjMshvnEUrNfVwqwZZhimf6MtsbW3BucQYi+pwvCenJnwDg927f7JeikHORfTRCD7Fk+zOu1JD5cJ0bCOP2V9arPtq+cNsiIYjTIvjEcdGWjWjm5gw5g1KB1WMg3RFsNC5wW2Q=
 after_deploy:
-  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-  - export REPO=meccano/gateway
-  - docker build -f docker/Dockerfile -t $REPO:$COMMIT .
-  - docker images
-  - docker tag $REPO:$COMMIT $REPO:latest
-  - docker tag $REPO:$COMMIT $REPO:$TRAVIS_TAG
-  - docker push $REPO
+- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+- export REPO=meccano/gateway
+- docker build -f docker/Dockerfile -t $REPO:$COMMIT .
+- docker images
+- docker tag $REPO:$COMMIT $REPO:latest
+- docker tag $REPO:$COMMIT $REPO:$TRAVIS_TAG
+- docker push $REPO
