@@ -1,6 +1,6 @@
 {
   "name": "meccano-iot-gateway",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Meccano IoT Gateway is a multi-purpose IoT (Internet of Things) board and software plataform.",
   "main": "server/app.js",
   "scripts": {
