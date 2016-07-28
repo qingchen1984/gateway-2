@@ -30,6 +30,7 @@ module.exports = function(sequelize, DataTypes) {
     type: DataTypes.STRING,
     registrationDate: DataTypes.DATE,
     creationDate: DataTypes.DATE,
+    version: DataTypes.STRING,
     lastAnnouncementDate: DataTypes.DATE,
     elapsedMinutes: DataTypes.INTEGER,
     status: DataTypes.STRING

@@ -29,11 +29,16 @@ var validateDevice = function(req, res, next) {
     return res.status(500).send('INVALID_DEVICE');
   }
   var agentStr = req.get('User-Agent');
+  //console.log(agentStr);
+  var versionStr = req.get('Version');
+  //console.log(versionStr);
 
 
   if(userAgentRe.test(agentStr)){
     var array = agentStr.match(userAgentRe);
     req.deviceType = array[1];
+    req.deviceVersion = versionStr;
+    //console.log(versionStr);
   }else{
     return res.status(406).send();
   }
@@ -45,6 +50,7 @@ var validateDevice = function(req, res, next) {
     },
     defaults: {
       'device': device,
+      'version': req.deviceVersion,
       'type':req.deviceType
     }
   }).spread((entity) => {

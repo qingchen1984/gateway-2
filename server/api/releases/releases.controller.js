@@ -36,6 +36,7 @@ exports.show = function(req, res) {
 };
 
 exports.update = function(req, res) {
+  console.log(JSON.stringify(req.headers));
   var type = req.params.type;
   if (type === 'ESP8266') {
     return updateESP(req, res);

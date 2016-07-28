@@ -46,7 +46,7 @@ var all = {
   root: path.normalize(__dirname + '/../../..'),
   seedDB: false,
   port: 3000,
-  address: 'localhost',
+  address: undefined,
   mysql: {
     uri: undefined,
     username: undefined,
@@ -59,8 +59,8 @@ var all = {
         maxConnections: 5,
         minConnections: 1
       },
-      host: undefined,
-      port: undefined
+      host: 'localhost',
+      port: '3306'
     }
   }
 };
@@ -101,8 +101,9 @@ function show(object, parent) {
 }
 
 if ((config.mysql.uri && (config.mysql.database || config.mysql.username || config.mysql.password || config.mysql.options.host || config.mysql.options.port))) {
+  console.log(config.mysql.uri, config.mysql.database, config.mysql.username, config.mysql.password , config.mysql.options.host, config.mysql.options.port);
   console.error('CONFIG ERROR!!\n\tYou should only specify MYSQL_URI and MYSQL_[DATABASE,USERNAME,PASSWORD,HOST,PORT]');
-  process.exit(1);
+  //process.exit(1);
 }
 
 if (config.mysql.options.logging === true) {

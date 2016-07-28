@@ -66,7 +66,9 @@ exports.ack = function(req, res) {
   }).then(function(registration) {
     return registration.updateAttributes({
       registrationDate: new Date(),
-      type:req.deviceType
+      type:req.deviceType,
+      version:req.deviceVersion,
+      //console.log("Version data is " + version)
     }).then(function(updated) {
       var obj = updated.get({
         plain: true

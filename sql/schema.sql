@@ -103,6 +103,7 @@ CREATE TABLE IF NOT EXISTS `Registration` (
     `registrationDate` TIMESTAMP NULL DEFAULT NULL,
     `creationDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `memo` VARCHAR(1024) NULL DEFAULT NULL,
+    `version` VARCHAR(60) NULL DEFAULT NULL,
     `type` VARCHAR(20) NULL,
     PRIMARY KEY (`device`)
 );
@@ -142,6 +143,7 @@ CREATE TABLE IF NOT EXISTS `DeviceStatus` (
     `registrationDate` INT,
     `creationDate` INT,
     `memo` INT,
+    `version` INT,
     `lastAnnouncementDate` INT,
     `elapsedMinutes` INT,
     `status` INT
@@ -179,6 +181,7 @@ VIEW `DeviceStatus` AS
         `r`.`creationDate` AS `creationDate`,
         `r`.`memo` AS `memo`,
         `r`.`type` AS `type`,
+        `r`.`version` AS `version`,
         `a`.`lastAnnouncementDate` AS `lastAnnouncementDate`,
         TIMESTAMPDIFF(MINUTE,
             `a`.`lastAnnouncementDate`,
