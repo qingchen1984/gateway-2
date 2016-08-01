@@ -38,7 +38,6 @@ var validateDevice = function(req, res, next) {
     var array = agentStr.match(userAgentRe);
     req.deviceType = array[1];
     req.deviceVersion = versionStr;
-    //console.log(versionStr);
   }else{
     return res.status(406).send();
   }
