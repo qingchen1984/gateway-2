@@ -29,10 +29,7 @@ var validateDevice = function(req, res, next) {
     return res.status(500).send('INVALID_DEVICE');
   }
   var agentStr = req.get('User-Agent');
-  //console.log(agentStr);
   var versionStr = req.get('Version');
-  //console.log(versionStr);
-
 
   if(userAgentRe.test(agentStr)){
     var array = agentStr.match(userAgentRe);
@@ -41,7 +38,6 @@ var validateDevice = function(req, res, next) {
   }else{
     return res.status(406).send();
   }
-
 
   return Registration.findOrCreate({
     where: {
