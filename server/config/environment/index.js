@@ -46,7 +46,7 @@ var all = {
   root: path.normalize(__dirname + '/../../..'),
   seedDB: false,
   port: 3000,
-  address: 'localhost',
+  address: undefined,
   mysql: {
     uri: undefined,
     username: undefined,

@@ -31,7 +31,8 @@ module.exports = function(sequelize, DataTypes) {
     memo: DataTypes.STRING,
     type: DataTypes.STRING,
     registrationDate: DataTypes.DATE,
-    creationDate: DataTypes.DATE
+    creationDate: DataTypes.DATE,
+    version: DataTypes.STRING
   },{
     freezeTableName: true,
     timestamps:false

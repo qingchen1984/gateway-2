@@ -29,15 +29,15 @@ var validateDevice = function(req, res, next) {
     return res.status(500).send('INVALID_DEVICE');
   }
   var agentStr = req.get('User-Agent');
-
+  var versionStr = req.get('Version');
 
   if(userAgentRe.test(agentStr)){
     var array = agentStr.match(userAgentRe);
     req.deviceType = array[1];
+    req.deviceVersion = versionStr;
   }else{
     return res.status(406).send();
   }
-
 
   return Registration.findOrCreate({
     where: {
@@ -45,6 +45,7 @@ var validateDevice = function(req, res, next) {
     },
     defaults: {
       'device': device,
+      'version': req.deviceVersion,
       'type':req.deviceType
     }
   }).spread((entity) => {
