@@ -59,8 +59,8 @@ var all = {
         maxConnections: 5,
         minConnections: 1
       },
-      host: 'localhost',
-      port: '3306'
+      host: undefined,
+      port: undefined
     }
   }
 };
@@ -101,7 +101,6 @@ function show(object, parent) {
 }
 
 if ((config.mysql.uri && (config.mysql.database || config.mysql.username || config.mysql.password || config.mysql.options.host || config.mysql.options.port))) {
-  console.log(config.mysql.uri, config.mysql.database, config.mysql.username, config.mysql.password , config.mysql.options.host, config.mysql.options.port);
   console.error('CONFIG ERROR!!\n\tYou should only specify MYSQL_URI and MYSQL_[DATABASE,USERNAME,PASSWORD,HOST,PORT]');
   process.exit(1);
 }
